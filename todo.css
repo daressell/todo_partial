@@ -1,0 +1,92 @@
+body{
+  background-color: rgba(0, 0, 0, 0.103);
+}
+
+#main{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-self: center;
+}
+
+div,
+h1
+.tools{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-self: center;
+}
+
+input{
+  margin-bottom: 30px;
+  border-radius: 1ex;
+  border-color: black;
+}
+
+.tools,
+input,
+.item{
+  padding: 10px;
+  margin-bottom: 10px;
+  width: 40%;
+  align-self: center;  
+}
+
+.item{
+  border: 1px solid;
+  border-radius: 1ex;
+  box-shadow: 5px 5px 8px 0 rgba(0, 0, 0, 0.7);
+  border-color: black;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.button{
+  cursor: pointer;
+  margin: 3px;
+  padding: 10px;
+  background-color: rgb(221, 190, 14);
+  border: 1px solid;
+  border-color: rgb(221, 190, 14);
+  border-radius: 1ex;
+  color: white;
+}
+
+.action{
+  margin-inline: 5px;
+  font-size:x-large;
+  cursor: pointer;
+}
+
+.done{
+  color: rgb(11, 136, 11);
+}
+
+.undone{
+  color: rgb(170, 35, 2);
+}
+
+.action :hover{
+  opacity:0.8;
+  transition: all 0.3s ease;
+}
+
+.page{
+  cursor: pointer;
+  padding: 5px;
+  margin-inline: 3px;
+  border: 1px solid;
+  border-radius: 0.5ex;
+}
+
+.selected{
+  background-color: rgba(0, 0, 0, 0.678);
+  color: white;
+}
+
+
+
+
+
