@@ -1,0 +1,127 @@
+body{
+  background-color: rgba(0, 0, 0, 0.103);
+  display: flex;
+  justify-content: center;
+}
+
+
+#root{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 40%;
+}
+
+.head{
+  display: flex;
+  flex-direction: column;
+}
+
+form{
+  display: flex;
+  justify-content: center;
+
+}
+
+.block{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-self: center;
+}
+
+ul{
+  padding: 0;
+}
+
+h1
+.tools{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-self: center;
+}
+
+.tools,
+input,
+.item{
+  padding: 10px;
+  margin-bottom: 10px;
+  align-self: center;  
+  
+}
+
+.tools{
+  width: 100%;
+}
+
+.item{
+  border: 1px solid;
+  border-radius: 1ex;
+  box-shadow: 5px 5px 8px 0 rgba(0, 0, 0, 0.7);
+  border-color: black;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+input{
+  margin-bottom: 30px;
+  border-radius: 1ex;
+  border-color: black;
+}
+
+.button{
+  cursor: pointer;
+  margin: 3px;
+  padding: 10px;
+  background-color: rgb(221, 190, 14);
+  border: 1px solid;
+  border-color: rgb(221, 190, 14);
+  border-radius: 1ex;
+  color: white;
+}
+
+.button:hover{
+  color: black;
+  background-color: white;
+  transition: all 0.3s ease;
+}
+
+.action{
+  margin-inline: 5px;
+  font-size:x-large;
+  cursor: pointer;
+}
+
+.done{
+  color: rgb(11, 136, 11);
+}
+
+.undone{
+  color: rgb(170, 35, 2);
+}
+
+.action:hover{
+  opacity:0.8;
+  transition: all 0.3s ease;
+}
+
+.page{
+  cursor: pointer;
+  padding: 5px;
+  margin-inline: 3px;
+  border: 1px solid;
+  border-radius: 0.5ex;
+}
+
+.selected{
+  background-color: rgba(0, 0, 0, 0.678);
+  color: white;
+}
+
+
+
+
+
+
