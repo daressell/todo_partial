@@ -28,18 +28,27 @@ span{
   padding: 30px;
 }
 
+::-webkit-input-placeholder {
+  text-align: center;
+}
+
+input:focus::placeholder {
+  color: transparent;
+}
+
 .add-item-form > input{
+  text-align: center;
   border:1px solid red;
   border-radius: 1em;
   padding: 10px;
-  transition: all 0.3s ease-in-out;
-  /* background-color: red; */
+  width: 300px;
+  transition: width 0.5s ease-in-out;
+  
 }
 
 .add-item-form > input:focus{
   outline-color: red;
-  width: 300px;
-  /* background-color: red; */
+  width: 400px;
 }
 
 .add-item-form{
@@ -60,6 +69,15 @@ span{
   color: red;
   background-color: white;
   transition: all 0.4s ease;
+}
+
+.filter.active{
+  color: white;
+  background-color: red;
+}
+
+.action.active{
+  color: red;
 }
 
 ul{

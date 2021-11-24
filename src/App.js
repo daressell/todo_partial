@@ -93,15 +93,13 @@ function App() {
 
   //хелпер функция для изменения параметра item.<parName> на значение parVal
   const changeItemParametr = (parName, parVal, id) => {
+    const updateStorageItems = items
     // строка создания копии item
+    // исправил способ изменения параметра в item, чтобы не проходиться по всем с помощью map
     const itemEditPar = items.find(item => item.id === id)
+    const itemIndex = items.findIndex(item => item.id === id)
     itemEditPar[parName] = parVal
-
-    //следующую стоку я загуглил, понял как работает
-    // --в начале мы проходимся по каждому item внутри items
-    // -- и находим тот, к которому относится копия и возвращаем копию, вместо старого item
-    // далее просто исользуем useState для обновления items
-    const updateStorageItems = items.map(item => itemEditPar.id === item.id ? itemEditPar : item);    
+    updateStorageItems[itemIndex] = itemEditPar 
     setItems(updateStorageItems)
   }
 
@@ -109,9 +107,9 @@ function App() {
     <div>
       <h1 style={{alignSelf: "center"}}>ToDo</h1>
       <AddItem handleAddItem={handleAddItem}/>
-      <SortFilterPanel handleFilter={handleFilteredItems} handleSort={handleSort}/>
+      <SortFilterPanel filter={filter} sort={sort} handleFilter={handleFilteredItems} handleSort={handleSort}/>
       <List items={itemsOnPage} handleDeleteItem = {handleDeleteItem} handleEditItem={handleEditItem} handleChangeStatus={handleChangeStatus}/>
-      <Pagination items={filteredItems} handlePage={handlePage}/>
+      <Pagination itemsCount={filteredItems.length} handlePage={handlePage}/>
     </div>
   );
 }

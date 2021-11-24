@@ -1,11 +1,9 @@
 import { useState } from "react";
 
-export const Pagination = ({items, handlePage}) => {
+export const Pagination = ({itemsCount, handlePage}) => {
   const [activePage, setActivePage] = useState(0)
   
-  // получаем количество страниц, исходя из количества items
-  // .ceil - для окнугления в большую сторону
-  const numberOfPages = Math.ceil(items.length/5);
+  const numberOfPages = Math.ceil(itemsCount/5);
 
   const handleClick = (newPage) => {
     if(newPage > (numberOfPages - 1) || newPage < 0){
