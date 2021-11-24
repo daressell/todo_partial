@@ -4,9 +4,8 @@ const Item = ({item, handleDeleteItem, handleEditItem, handleChangeStatus}) => {
   const [inputField, setInputField] = useState(false);
   const [newName, setNewName] = useState(item.name);
   const [status, setStatus] = useState(item.status)
-
-  const createdDate = `${item.date.getDate()}.${item.date.getMonth()}---${item.date.getHours()}:${item.date.getMinutes()}`
-
+  const itemDate = new Date(Date.parse(item.date))
+  const createdDate = `${itemDate.getDate()}.${itemDate.getMonth()}---${itemDate.getHours()}:${itemDate.getMinutes()}`
   const changeText = (e) => {
     setNewName(e.target.value)
   }

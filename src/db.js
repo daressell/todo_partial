@@ -1,7 +1,8 @@
 import uuid from 'react-native-uuid';
 
 const createdDate = new Date()
-export let storage = [
+
+const storage = [
   {id: uuid.v4(), name: "some name1", status: 'done', date: createdDate},
   {id: uuid.v4(), name: "some name2", status: 'done', date: createdDate},
   {id: uuid.v4(), name: "some name3", status: 'done', date: createdDate},
@@ -22,7 +23,22 @@ export let storage = [
   {id: uuid.v4(), name: "some name19", status: 'undone', date: createdDate},
   {id: uuid.v4(), name: "some name20", status: 'undone', date: createdDate},
   {id: uuid.v4(), name: "some name21", status: 'undone', date: createdDate},
-  {id: uuid.v4(), name: "some name22", status: 'undone', date: createdDate}
+  {id: uuid.v4(), name: "some name22", status: 'undone', date: createdDate},
+  {id: uuid.v4(), name: "some name2", status: 'done', date: createdDate},
+  {id: uuid.v4(), name: "some name3", status: 'done', date: createdDate},
+  {id: uuid.v4(), name: "some name5", status: 'undone', date: createdDate},
+  {id: uuid.v4(), name: "some name6", status: 'undone', date: createdDate},
+  {id: uuid.v4(), name: "some name2", status: 'done', date: createdDate},
+  {id: uuid.v4(), name: "some name3", status: 'done', date: createdDate},
+  {id: uuid.v4(), name: "some name5", status: 'undone', date: createdDate},
+  {id: uuid.v4(), name: "some name6", status: 'undone', date: createdDate},
+  {id: uuid.v4(), name: "some name2", status: 'done', date: createdDate},
+  {id: uuid.v4(), name: "some name3", status: 'done', date: createdDate},
+  {id: uuid.v4(), name: "some name5", status: 'undone', date: createdDate},
+  {id: uuid.v4(), name: "some name6", status: 'undone', date: createdDate},
+  {id: uuid.v4(), name: "some name2", status: 'done', date: createdDate},
+  {id: uuid.v4(), name: "some name3", status: 'done', date: createdDate},
+  {id: uuid.v4(), name: "some name5", status: 'undone', date: createdDate},
+  {id: uuid.v4(), name: "some name6", status: 'undone', date: createdDate},
 ]
-
-export default storage
+localStorage.setItem('items', JSON.stringify(storage))
