@@ -1,33 +1,55 @@
 import { useState } from "react";
 
-const Item = ({items, item, index, handleDeleteItem}) => {
-  const [checkedState, setCheckedState] = useState(
-    items.map(el => {return el.done})
-  );
+const Item = ({item, handleDeleteItem, handleEditItem, handleChangeStatus}) => {
+  const [inputField, setInputField] = useState(false);
+  const [newName, setNewName] = useState(item.name);
+  const [status, setStatus] = useState(item.status)
 
-  const handleOnChange = (position) => {
-    const updatedCheckedState = checkedState.map((item, index) =>
-      index === position ? !item : item
-    );
-    items[position].done = !items[position].done
-    setCheckedState(updatedCheckedState);
-  };
+  const changeText = (e) => {
+    setNewName(e.target.value)
+  }
+
+  const handleClick = (e) => {
+    if(e.target.className === 'item-details' || e.target.className === 'item-name'){
+      inputField ? setInputField(false) : setInputField(true)
+    }
+  }
   return ( 
-    <div>
-      <div className="block"> 
+    <div className="item-details" onClick={handleClick}>
+      <div className="status">
         <input
+          className="check-box"
           type="checkbox"
-          checked={item.done}
-          onChange={() => handleOnChange(index)}
+          id={'check-' + item.id.substr(0,8)}
+          checked={status === 'done' ? true : false}
+          onChange={() => {
+                          if(status === 'done'){
+                            setStatus('undone');
+                            handleChangeStatus('undone', item.id)
+                          }                           
+                          else{
+                            setStatus('done');
+                            handleChangeStatus('done', item.id)
+                          }
+                          }}
         />
-        <span className="item-name">{item.name}</span>
-      </div>        
-      <div className="block">
-        <span>{item.date}</span>
-        <div className="action" onClick={() => handleDeleteItem(item.id)}>
-          <i className="fas fa-trash"></i>
-        </div>
+        <label htmlFor={'check-' + item.id.substr(0,8)} ></label>
+        {!inputField && <span className="item-name">{item.name}</span>}
+        {inputField &&
+          <form className="edit-item-form" onSubmit={() => {handleEditItem(newName, item.id); setInputField(false)}}>
+            <div className="edit-item">
+              <input type="text" size="40" value={newName} onChange={changeText}></input>
+            </div>
+          </form>
+        }     
       </div>
+      <div>
+        <span>{item.date}</span>
+        <span className="action" onClick={() => handleDeleteItem(item.id)}>
+          <i className="fas fa-trash"></i>
+        </span>
+      </div>
+      
     </div>
       
   );

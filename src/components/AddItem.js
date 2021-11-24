@@ -8,13 +8,8 @@ export const AddItem = ({handleAddItem}) => {
   }
 
   return(
-    <div className="head">
-      <h1 style={{alignSelf: "center"}}>ToDo</h1>
-      <form onSubmit={(e) => {handleAddItem(e, itemName); setItemName('')}}>
-        <input type="text" size="40" value={itemName} placeholder="Input some here..." onChange={changeText}></input>
-      </form>
-    </div>
-    
-    
+    <form className="add-item-form" onSubmit={(e) => {handleAddItem(e, itemName); setItemName('')}}>
+      <input type="text" size="40" value={itemName} placeholder="Input some here..." onChange={changeText}></input>
+    </form>
   )
 }
