@@ -1,4 +1,4 @@
-export const SortFilterPanel = ({handleFilter}) => {
+export const SortFilterPanel = ({handleFilter, handleSort}) => {
   return(
     <div className="sort-filter-panel">
       <div className="filters">
@@ -8,10 +8,10 @@ export const SortFilterPanel = ({handleFilter}) => {
       </div>
       <div className="sort">
         Sort by Date
-        <span className="action">
+        <span className="action" onClick={() => handleSort(1)}>
           <i className="fas fa-arrow-up"></i>
         </span>
-        <span className="action">
+        <span className="action" onClick={() => handleSort(-1)}>
           <i className="fas fa-arrow-down"></i>
         </span>
       </div>

@@ -9,6 +9,7 @@ import uuid from 'react-native-uuid';
 function App() {
   const [items, setItems] = useState(storage)
   const [filter, setFilter] = useState('all')
+  const [sort, setSort] = useState()
   const [page, setPage] = useState(0)
   const [filteredItems, setfilteredItems] = useState(items);
   const [itemsOnPage, setItemsOnPage] = useState(items.slice(0, 5));
@@ -16,15 +17,26 @@ function App() {
   useEffect(() => {
     let updateFilteredItems
     if(filter === 'all'){
-      updateFilteredItems = items
+      updateFilteredItems = items.slice(0).reverse()
     }
     else{
       updateFilteredItems = items.slice(0).reverse().filter(item => item.status === filter)
     }
-    const updateShowItems = updateFilteredItems.slice(0).reverse().slice(page*5, (page+1)*5)
+    if(sort){
+      updateFilteredItems.sort((prevItem, item) => {
+        if (prevItem.name > item.name) {
+          return sort;
+        }
+        if (prevItem.name < item.name) {
+          return sort;
+        }
+        return 0;
+      })      
+    }
+    const updateShowItems = updateFilteredItems.slice(page*5, (page+1)*5)
     setfilteredItems(updateFilteredItems)
     setItemsOnPage(updateShowItems)
-  }, [items, page, filter])
+  }, [items, page, filter, sort])
   
   const handleAddItem = (e, name) => {
     e.preventDefault();
@@ -32,7 +44,7 @@ function App() {
       id: uuid.v4(),
       name: name,
       status: "undone",
-      date: "10/11/22"
+      date: new Date()
     }
     setItems([...items, newItem])
   }
@@ -40,6 +52,10 @@ function App() {
   const handleFilteredItems = (typeFilter='all') => {
     setPage(0)
     setFilter(typeFilter)
+  }
+
+  const handleSort = (sortType) => {
+    setSort(sortType)
   }
 
   const handleDeleteItem = (id) => {
@@ -71,7 +87,7 @@ function App() {
     <div>
       <h1 style={{alignSelf: "center"}}>ToDo</h1>
       <AddItem handleAddItem={handleAddItem}/>
-      <SortFilterPanel handleFilter={handleFilteredItems}/>
+      <SortFilterPanel handleFilter={handleFilteredItems} handleSort={handleSort}/>
       <List items={itemsOnPage} handleDeleteItem = {handleDeleteItem} handleEditItem={handleEditItem} handleChangeStatus={handleChangeStatus}/>
       <Pagination items={filteredItems} handlePage={handlePage}/>
     </div>
