@@ -12,6 +12,8 @@ function App() {
   const [filter, setFilter] = useState('all')
   const [sort, setSort] = useState(0)
   const [page, setPage] = useState(0)
+  const [activePage, setActivePage] = useState(0)
+  const [alertMessege, setAlertMessege] = useState('')
   const [filteredItems, setfilteredItems] = useState(JSON.parse(items));
   const [itemsOnPage, setItemsOnPage] = useState(filteredItems.slice(0, 5)); // изначально отображаются только первые 5 item
 
@@ -30,12 +32,24 @@ function App() {
       updateFilteredItems = itemsParse.slice(0).reverse().filter(item => item.status === filter)
     }
     if(sort){
-      updateFilteredItems.sort(() => sort)      
+      updateFilteredItems.sort(() => sort)
     }
     const updateShowItems = updateFilteredItems.slice(page*5, (page+1)*5)
-    setfilteredItems(updateFilteredItems)
-    setItemsOnPage(updateShowItems)
+    if(updateShowItems.length){
+      setAlertMessege('')
+      setfilteredItems(updateFilteredItems)
+      setItemsOnPage(updateShowItems)
+    }else if(page){
+      console.log('useEffect page', page);
+      setPage(page-1)
+      setActivePage(page-1)
+    }else{
+      setfilteredItems(updateFilteredItems)
+      setAlertMessege("Items is empty ^_^")
+      setItemsOnPage([])
+    }
     localStorage.setItem('items', items)
+
   }, [items, page, filter, sort])
   
 
@@ -68,17 +82,19 @@ function App() {
   // обработчик установки фильтра
   const handleFilteredItems = (typeFilter='all') => {
     setPage(0)
+    setActivePage(0)
     setFilter(typeFilter)
   }
   // обработчик установки сортировки
   const handleSort = (sortType) => {
     setPage(0)
+    setActivePage(0)
     setSort(sortType)
   }
 
   // обработчик удаления item
   const handleDeleteItem = (id) => {
-    const updateStorageItems = JSON.parse(items).filter(item => item.id !== id)    
+    const updateStorageItems = JSON.parse(items).filter(item => item.id !== id)
     setItems(JSON.stringify(updateStorageItems))
   }
 
@@ -95,6 +111,7 @@ function App() {
   //обработчик установки страницы
   const handlePage = (number=0) => {
     setPage(number)
+    setActivePage(number)
     setItemsOnPage(filteredItems.slice(number*5, (number+1)*5))
   }
 
@@ -103,8 +120,8 @@ function App() {
       <h2>ToDo</h2>
       <AddItem handleAddItem={handleAddItem}/>
       <SortFilterPanel filter={filter} sort={sort} handleFilter={handleFilteredItems} handleSort={handleSort}/>
-      <List items={itemsOnPage} handleDeleteItem = {handleDeleteItem} handleEditItem={handleEditItem}/>
-      <Pagination itemsCount={filteredItems.length} handlePage={handlePage}/>
+      <List items={itemsOnPage} alertMessege={alertMessege} handleDeleteItem = {handleDeleteItem} handleEditItem={handleEditItem}/>
+      <Pagination itemsCount={filteredItems.length} activePage={activePage} handlePage={handlePage}/>
     </div>
   );
 }
