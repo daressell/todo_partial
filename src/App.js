@@ -4,11 +4,10 @@ import { List } from "./components/List";
 import { Pagination } from "./components/Pagination";
 import { SortFilterPanel } from "./components/SortFilterPanel";
 import uuid from 'react-native-uuid';
-import { storage } from "./db";
 
 
 function App() {
-  if(!localStorage.items) localStorage.setItem('items', JSON.stringify(storage))
+  // if(!localStorage.items) localStorage.setItem('items', JSON.stringify(storage))
   const [items, setItems] = useState("[]")
   const [filter, setFilter] = useState('all')
   const [sort, setSort] = useState(0)
@@ -43,7 +42,15 @@ function App() {
   //обработчик добавления нового item
   const handleAddItem = (e, name) => {
     const reg = /[\wа-яА-Я]/;
-    
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    const curDate = new Date()
+    const timeObj = {}
+    timeObj.date = `${curDate.getDate()} ${months[curDate.getMonth()]}`
+    let createdTime = ''    
+    curDate.getHours().toString().length === 2 ? createdTime += curDate.getHours().toString() : createdTime += '0' + curDate.getHours().toString()
+    createdTime += ':'
+    curDate.getMinutes().toString().length === 2 ? createdTime += curDate.getMinutes().toString() : createdTime += '0' + curDate.getMinutes().toString()
+    timeObj.time = createdTime
     e.preventDefault();
     if(!name.match(reg)){
       return 0
@@ -53,7 +60,7 @@ function App() {
       id: uuid.v4(),
       name: name.trim(),
       status: "undone",
-      date: new Date()
+      createdAt: timeObj
     }
     setItems(JSON.stringify([...cashStorage, newItem]))
   }
@@ -65,6 +72,7 @@ function App() {
   }
   // обработчик установки сортировки
   const handleSort = (sortType) => {
+    setPage(0)
     setSort(sortType)
   }
 
@@ -72,16 +80,16 @@ function App() {
   const handleDeleteItem = (id) => {
     const updateStorageItems = JSON.parse(items).filter(item => item.id !== id)    
     setItems(JSON.stringify(updateStorageItems))
-  }  
-
-  //обработчик изменения item.status
-  const handleChangeStatus = (newStatus, id) => {
-    changeItemParametr('status', newStatus, id)
   }
 
   //обработчик изменения item.name
-  const handleEditItem = (newName, id) => {
-    changeItemParametr('name', newName, id)
+  const handleEditItem = (parName, parVal, id) => {
+    const updateStorageItems = JSON.parse(items)
+    const itemEditPar = updateStorageItems.find(item => item.id === id)
+    const itemIndex = updateStorageItems.findIndex(item => item.id === id)
+    itemEditPar[parName] = parVal
+    updateStorageItems[itemIndex] = itemEditPar
+    setItems(JSON.stringify(updateStorageItems))
   }
 
   //обработчик установки страницы
@@ -90,24 +98,12 @@ function App() {
     setItemsOnPage(filteredItems.slice(number*5, (number+1)*5))
   }
 
-  //хелпер функция для изменения параметра item.<parName> на значение parVal
-  const changeItemParametr = (parName, parVal, id) => {
-    const updateStorageItems = JSON.parse(items)
-    // строка создания копии item
-    // исправил способ изменения параметра в item, чтобы не проходиться по всем с помощью map
-    const itemEditPar = updateStorageItems.find(item => item.id === id)
-    const itemIndex = updateStorageItems.findIndex(item => item.id === id)
-    itemEditPar[parName] = parVal
-    updateStorageItems[itemIndex] = itemEditPar
-    setItems(JSON.stringify(updateStorageItems))
-  }
-
   return (    
     <div>
-      <h1 style={{alignSelf: "center"}}>ToDo</h1>
+      <h2>ToDo</h2>
       <AddItem handleAddItem={handleAddItem}/>
       <SortFilterPanel filter={filter} sort={sort} handleFilter={handleFilteredItems} handleSort={handleSort}/>
-      <List items={itemsOnPage} handleDeleteItem = {handleDeleteItem} handleEditItem={handleEditItem} handleChangeStatus={handleChangeStatus}/>
+      <List items={itemsOnPage} handleDeleteItem = {handleDeleteItem} handleEditItem={handleEditItem}/>
       <Pagination itemsCount={filteredItems.length} handlePage={handlePage}/>
     </div>
   );

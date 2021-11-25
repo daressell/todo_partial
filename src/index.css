@@ -5,11 +5,15 @@ body{
   font-size: 20px;
 }
 
+input{
+  font-size: 20px;
+}
+
 #root{
   width: 40%;
 }
 
-h1 {
+h2 {
   text-align:center;
 }
 
@@ -42,8 +46,7 @@ input:focus::placeholder {
   border-radius: 1em;
   padding: 10px;
   width: 300px;
-  transition: width 0.5s ease-in-out;
-  
+  transition: width 0.5s ease-in-out;  
 }
 
 .add-item-form > input:focus{
@@ -89,7 +92,7 @@ ul{
 
 li{
   display: inline;
-  padding: 20px;
+  padding: 15px;
   border: 1px solid black;
   margin: 10px;
   border-radius: 0.5em;
@@ -115,11 +118,21 @@ li{
   display: inline;
 }
 
+
+
+.edit-item > input{
+  border: 1px solid red;
+  border-radius: 3ex;
+  padding: 15px;
+  text-align: center;
+  font-size: large;
+}
+
 .status > input[type="checkbox"] + label::after{
-  content: "\f057";
+  content: "\f111";
   font-family: "Font Awesome 5 Free";
   font-size: 25px;
-  color: red;
+  color: black;
 }
 
 .status > input[type="checkbox"]:checked + label::after {
@@ -133,6 +146,35 @@ li{
   position: absolute;
 }
 
+.time-delete{
+  display: flex;
+  flex-direction: row;
+  /* align-self: center; */
+}
+
+.name,
+.status,
+.time,
+.delete{
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  transition: all 0.3s ease;
+}
+
+.name{
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 35ch;
+}
+
+.time{
+  margin-inline-end: 20px;
+}
+
+
 #pagination{
   display: flex;
   justify-content: space-evenly
@@ -145,7 +187,7 @@ li{
   border: 1px solid red;
   border-radius: 0.5em;
   background-color: white;
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
 }
 
 .active.page{
@@ -157,6 +199,7 @@ li{
   display: none;
 }
 
+.delete:hover,
 .page.arrow{
   align-self: center;
   color: red;

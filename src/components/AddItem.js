@@ -9,7 +9,7 @@ export const AddItem = ({handleAddItem}) => {
 
   return(
     <form className="add-item-form" onSubmit={(e) => {handleAddItem(e, itemName); setItemName('')}}>
-      <input type="text" size="40" value={itemName} placeholder="Input some here..." onChange={changeText}></input>
+      <input type="text" size="40" value={itemName} placeholder="Gonna do..." onChange={changeText}></input>
     </form>
   )
 }
