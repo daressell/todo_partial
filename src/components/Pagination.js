@@ -4,7 +4,6 @@ export const Pagination = ({itemsCount, handlePage}) => {
   const [activePage, setActivePage] = useState(0)
   
   const numberOfPages = Math.ceil(itemsCount/5);
-  console.log(numberOfPages);
 
   const handleClick = (newPage) => {
     if(newPage > (numberOfPages - 1) || newPage < 0){
