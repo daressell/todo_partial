@@ -4,17 +4,17 @@ import { List } from "./components/List";
 import { Pagination } from "./components/Pagination";
 import { SortFilterPanel } from "./components/SortFilterPanel";
 import uuid from 'react-native-uuid';
+import { storage } from "./db";
 
 
 function App() {
-  
-  const [items, setItems] = useState((JSON.parse(localStorage.getItem('items'))))
+  if(!localStorage.items) localStorage.setItem('items', JSON.stringify(storage))
+  const [items, setItems] = useState((localStorage.getItem('items')))
   const [filter, setFilter] = useState('all')
   const [sort, setSort] = useState(0)
   const [page, setPage] = useState(0)
-  const [filteredItems, setfilteredItems] = useState(items);
-  const [itemsOnPage, setItemsOnPage] = useState(items.slice(0, 5)); // изначально отображаются только первые 5 item
-
+  const [filteredItems, setfilteredItems] = useState(JSON.parse(items));
+  const [itemsOnPage, setItemsOnPage] = useState(filteredItems.slice(0, 5)); // изначально отображаются только первые 5 item
 
   // вызывается каждый раз при обновлении данных:
   //-----------(сортировка, изменения колчиества(удаление, добавление), изменения страницы и фильтров)
@@ -23,40 +23,39 @@ function App() {
   // для того, чтобы не изменять саму переменную, исользовал конструкцию -> Array.slice(0).reverse()
   useEffect(() => {
     let updateFilteredItems
+    const itemsParse = JSON.parse(items)
     if(filter === 'all'){
-      updateFilteredItems = items.slice(0).reverse()
+      updateFilteredItems = itemsParse.slice(0).reverse()
     }
     else{
-      updateFilteredItems = items.slice(0).reverse().filter(item => item.status === filter)
+      console.log(filter);
+      updateFilteredItems = itemsParse.slice(0).reverse().filter(item => item.status === filter)
     }
     if(sort){
-      updateFilteredItems.sort((prevItem, item) => {
-        if (prevItem.name > item.name) {
-          return sort;
-        }
-        if (prevItem.name < item.name) {
-          return sort;
-        }
-        return 0;
-      })      
+      updateFilteredItems.sort(() => sort)      
     }
     const updateShowItems = updateFilteredItems.slice(page*5, (page+1)*5)
     setfilteredItems(updateFilteredItems)
     setItemsOnPage(updateShowItems)
-    localStorage.setItem('items', JSON.stringify(items))
+    localStorage.setItem('items', items)
   }, [items, page, filter, sort])
   
 
   //обработчик добавления нового item
   const handleAddItem = (e, name) => {
+    const reg = /\w/;
     e.preventDefault();
+    if(!name.match(reg)){
+      return 0
+    }
+    const cashStorage = JSON.parse(items)
     const newItem = {
       id: uuid.v4(),
-      name: name,
+      name: name.trim(),
       status: "undone",
       date: new Date()
     }
-    setItems([...items, newItem])
+    setItems(JSON.stringify([...cashStorage, newItem]))
   }
 
   // обработчик установки фильтра
@@ -71,8 +70,8 @@ function App() {
 
   // обработчик удаления item
   const handleDeleteItem = (id) => {
-    const updateStorageItems = items.filter(item => item.id !== id)    
-    setItems(updateStorageItems)
+    const updateStorageItems = JSON.parse(items).filter(item => item.id !== id)    
+    setItems(JSON.stringify(updateStorageItems))
   }  
 
   //обработчик изменения item.status
@@ -93,14 +92,14 @@ function App() {
 
   //хелпер функция для изменения параметра item.<parName> на значение parVal
   const changeItemParametr = (parName, parVal, id) => {
-    const updateStorageItems = items
+    const updateStorageItems = JSON.parse(items)
     // строка создания копии item
     // исправил способ изменения параметра в item, чтобы не проходиться по всем с помощью map
-    const itemEditPar = items.find(item => item.id === id)
-    const itemIndex = items.findIndex(item => item.id === id)
+    const itemEditPar = updateStorageItems.find(item => item.id === id)
+    const itemIndex = updateStorageItems.findIndex(item => item.id === id)
     itemEditPar[parName] = parVal
-    updateStorageItems[itemIndex] = itemEditPar 
-    setItems(updateStorageItems)
+    updateStorageItems[itemIndex] = itemEditPar
+    setItems(JSON.stringify(updateStorageItems))
   }
 
   return (    

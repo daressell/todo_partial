@@ -4,8 +4,10 @@ const Item = ({item, handleDeleteItem, handleEditItem, handleChangeStatus}) => {
   const [inputField, setInputField] = useState(false);
   const [newName, setNewName] = useState(item.name);
   const [status, setStatus] = useState(item.status)
+
   const itemDate = new Date(Date.parse(item.date))
   const createdDate = `${itemDate.getDate()}.${itemDate.getMonth()}---${itemDate.getHours()}:${itemDate.getMinutes()}`
+
   const changeText = (e) => {
     setNewName(e.target.value)
   }
@@ -15,6 +17,18 @@ const Item = ({item, handleDeleteItem, handleEditItem, handleChangeStatus}) => {
       inputField ? setInputField(false) : setInputField(true)
     }
   }
+
+  const handleActionKey = (e, newName, itemId) => {    
+    if(e.key === 'Escape'){
+      setInputField(false);
+      setNewName(item.name)
+    }
+    if(e.key === 'Enter'){
+      handleEditItem(newName, itemId);
+      setInputField(false);
+    }
+  }
+
   return ( 
     <div className="item-details" onClick={handleClick}>
       <div className="status">
@@ -37,9 +51,9 @@ const Item = ({item, handleDeleteItem, handleEditItem, handleChangeStatus}) => {
         <label htmlFor={'check-' + item.id.substr(0,8)} ></label>
         {!inputField && <span className="item-name">{item.name}</span>}
         {inputField &&
-          <form className="edit-item-form" onSubmit={() => {handleEditItem(newName, item.id); setInputField(false)}}>
+          <form className="edit-item-form">
             <div className="edit-item">
-              <input type="text" size="40" value={newName} onChange={changeText}></input>
+              <input type="text" size="40" value={newName} onChange={changeText} onKeyDown={(e) => handleActionKey(e, newName, item.id)}></input>
             </div>
           </form>
         }     

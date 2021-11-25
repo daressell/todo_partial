@@ -4,6 +4,7 @@ export const Pagination = ({itemsCount, handlePage}) => {
   const [activePage, setActivePage] = useState(0)
   
   const numberOfPages = Math.ceil(itemsCount/5);
+  console.log(numberOfPages);
 
   const handleClick = (newPage) => {
     if(newPage > (numberOfPages - 1) || newPage < 0){
@@ -13,11 +14,12 @@ export const Pagination = ({itemsCount, handlePage}) => {
     handlePage(newPage);
   }
   return(
-    <div className="block" id="pagination">
+    <div>
+      {(numberOfPages !== 1) && <div className="block" id="pagination">
       <span className="page arrow" onClick={() => handleClick(0)}>
         <i className="fas fa-angle-double-left"></i>
       </span>
-      <span className="page arrow" onClick={() => handleClick(activePage + 1)}>
+      <span className="page arrow" onClick={() => handleClick(activePage - 1)}>
         <i className="fas fa-angle-left"></i>
       </span>
       {/* создаем массив из количества страниц элементов */}
@@ -38,6 +40,8 @@ export const Pagination = ({itemsCount, handlePage}) => {
       </span>
       
       
+    </div>}
     </div>
+    
   )
 }

@@ -1,6 +1,6 @@
 import Item from "./Item";
 
-export const List = ({items, handleDeleteItem, handleEditItem, handleChangeStatus}) => {  
+export const List = ({items, handleDeleteItem, handleEditItem, handleChangeStatus}) => {
   return(
     <ul className="items">
       {items.map(item => {
