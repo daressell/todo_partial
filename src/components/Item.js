@@ -25,7 +25,7 @@ const Item = ({item, handleDeleteItem, handleEditItem, handleChangeStatus}) => {
   }
 
   const handleActionKey = (e, newName, itemId) => {    
-    const reg = /\w/;
+    const reg = /[\wа-яА-Я]/;
     if(e.key === 'Escape' || e.key === 'Enter'){
       if(!newName.match(reg)) return void(0)
       e.preventDefault()      

@@ -42,7 +42,8 @@ function App() {
 
   //обработчик добавления нового item
   const handleAddItem = (e, name) => {
-    const reg = /\w/;
+    const reg = /[\wа-яА-Я]/;
+    
     e.preventDefault();
     if(!name.match(reg)){
       return 0
