@@ -133,15 +133,11 @@ li{
   position: absolute;
 }
 
-.filter:hover{
-  color: white;
-  background-color: red;
-}
-
 #pagination{
   display: flex;
   justify-content: space-evenly
 }
+.sort,
 .page{
   cursor: pointer;
   color: red;
@@ -165,4 +161,12 @@ li{
   align-self: center;
   color: red;
   border: 0px;
+}
+
+.sort:hover,
+.sort.active,
+.page:hover,
+.filter:hover{
+  color: white;
+  background-color: red;
 }

@@ -6,12 +6,12 @@ export const SortFilterPanel = ({filter, sort, handleFilter, handleSort}) => {
         <span className={filter === 'done' ? 'filter active' : 'filter'} onClick={() => handleFilter('done')}>Done</span>
         <span className={filter === 'undone' ? 'filter active' : 'filter'} onClick={() => handleFilter('undone')}>Undone</span>
       </div>
-      <div className="sort">
+      <div className="sorts">
         Sort by Date
-        <span className={sort === 1 ? 'action active' : 'action'} onClick={() => handleSort(1)}>
+        <span className={sort === 1 ? 'sort active' : 'sort'} onClick={() => handleSort(1)}>
           <i className="fas fa-arrow-up"></i>
         </span>
-        <span className={sort === -1 ? 'action active' : 'action'} onClick={() => handleSort(-1)}>
+        <span className={sort === -1 ? 'sort active' : 'sort'} onClick={() => handleSort(-1)}>
           <i className="fas fa-arrow-down"></i>
         </span>
       </div>

@@ -9,7 +9,7 @@ import { storage } from "./db";
 
 function App() {
   if(!localStorage.items) localStorage.setItem('items', JSON.stringify(storage))
-  const [items, setItems] = useState((localStorage.getItem('items')))
+  const [items, setItems] = useState("[]")
   const [filter, setFilter] = useState('all')
   const [sort, setSort] = useState(0)
   const [page, setPage] = useState(0)
@@ -28,7 +28,6 @@ function App() {
       updateFilteredItems = itemsParse.slice(0).reverse()
     }
     else{
-      console.log(filter);
       updateFilteredItems = itemsParse.slice(0).reverse().filter(item => item.status === filter)
     }
     if(sort){

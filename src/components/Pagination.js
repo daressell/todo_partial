@@ -14,7 +14,7 @@ export const Pagination = ({itemsCount, handlePage}) => {
   }
   return(
     <div>
-      {(numberOfPages !== 1) && <div className="block" id="pagination">
+      {(numberOfPages > 1) && <div className="block" id="pagination">
       <span className="page arrow" onClick={() => handleClick(0)}>
         <i className="fas fa-angle-double-left"></i>
       </span>
