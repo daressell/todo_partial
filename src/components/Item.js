@@ -25,13 +25,12 @@ const Item = ({item, handleDeleteItem, handleEditItem, handleChangeStatus}) => {
   }
 
   const handleActionKey = (e, newName, itemId) => {    
-    if(e.key === 'Escape'){
-      setInputField(false);
-      setNewName(item.name)
-    }
-    if(e.key === 'Enter'){
-      handleEditItem(newName, itemId);
-      setInputField(false);
+    const reg = /\w/;
+    if(e.key === 'Escape' || e.key === 'Enter'){
+      if(!newName.match(reg)) return void(0)
+      e.preventDefault()      
+      e.key === 'Enter' ? handleEditItem(newName, itemId) : setNewName(item.name);
+      setInputField(false)   
     }
   }
 
