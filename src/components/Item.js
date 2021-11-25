@@ -6,7 +6,13 @@ const Item = ({item, handleDeleteItem, handleEditItem, handleChangeStatus}) => {
   const [status, setStatus] = useState(item.status)
 
   const itemDate = new Date(Date.parse(item.date))
-  const createdDate = `${itemDate.getDate()}.${itemDate.getMonth()}---${itemDate.getHours()}:${itemDate.getMinutes()}`
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+  const createdDate = `${itemDate.getDate()} ${months[itemDate.getMonth()]}`
+  let createdTime = ''
+  
+  itemDate.getHours().toString().length === 2 ? createdTime += itemDate.getHours().toString() : createdTime += '0' + itemDate.getHours().toString()
+  createdTime += ':'
+  itemDate.getMinutes().toString().length === 2 ? createdTime += itemDate.getMinutes().toString() : createdTime += '0' + itemDate.getMinutes().toString()
 
   const changeText = (e) => {
     setNewName(e.target.value)
@@ -60,6 +66,7 @@ const Item = ({item, handleDeleteItem, handleEditItem, handleChangeStatus}) => {
       </div>
       <div>
         <span>{createdDate}</span>
+        <span>{createdTime}</span>
         <span className="action" onClick={() => handleDeleteItem(item.id)}>
           <i className="fas fa-trash"></i>
         </span>
