@@ -6,6 +6,12 @@ body{
   overflow-y: scroll;
 }
 
+.todo{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 input{
   font-size: 20px;
   font-family: monospace;
@@ -18,10 +24,6 @@ input{
 h2 {
   text-align:center;
   margin-bottom: 10px;
-}
-
-span{
-  margin: 5px;
 }
 
 .add-item-form,
@@ -105,14 +107,15 @@ input:focus::placeholder {
   background-color: white;
 }
 
-ul{
+.items{
+  min-height: 550px;
   padding: 0;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
-li{
+.item{
   display: inline;
   padding-inline: 15px;
   border: 1px solid black;

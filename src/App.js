@@ -1,21 +1,22 @@
 import { useEffect, useState } from "react";
 import { AddItem } from "./components/AddItem";
 import { List } from "./components/List";
-import { Pagination } from "./components/Pagination";
+import { PaginationMy } from "./components/PaginationMy";
 import { SortFilterPanel } from "./components/SortFilterPanel";
 import uuid from 'react-native-uuid';
+import { Pagination, Row, Col } from "antd";
 
 
 function App() {
-  // if(!localStorage.items) localStorage.setItem('items', JSON.stringify(storage))
-  const [items, setItems] = useState("[]")
+  const [items, setItems] = useState(localStorage.getItem('items'))
   const [filter, setFilter] = useState('all')
   const [sort, setSort] = useState(0)
-  const [activePage, setActivePage] = useState(0)
+  const [activePage, setActivePage] = useState(1)
   const [alertMessege, setAlertMessege] = useState('')
   const [filteredItems, setfilteredItems] = useState(JSON.parse(items));
   const [itemsOnPage, setItemsOnPage] = useState(filteredItems.slice(0, 5)); // изначально отображаются только первые 5 item
-  const [countOfPages, setCountOfPages] = useState()
+  const [countOfPages, setCountOfPages] = useState(0)
+  const [pageSize, setPageSize] = useState(5)
 
   // вызывается каждый раз при обновлении данных:
   //-----------(сортировка, изменения колчиества(удаление, добавление), изменения страницы и фильтров)
@@ -34,10 +35,13 @@ function App() {
     if(sort){
       updateFilteredItems.sort(() => sort)
     }
-    const pagesCount = Math.ceil(updateFilteredItems.length/5);
-    setCountOfPages(pagesCount)
     
-    const updateShowItems = updateFilteredItems.slice(activePage*5, (activePage+1)*5)
+    // setCountOfPages(pagesCount)
+    setCountOfPages(updateFilteredItems.length)
+    
+    const updateShowItems = updateFilteredItems.slice((activePage)*pageSize, (activePage+1)*pageSize)
+    console.log('updateShowItems', updateShowItems);
+    console.log('pageSize', pageSize);
     if(updateShowItems.length){
       setAlertMessege('')
       setfilteredItems(updateFilteredItems)
@@ -52,7 +56,7 @@ function App() {
      
     localStorage.setItem('items', items)
 
-  }, [items, activePage, filter, sort])
+  }, [items, activePage, filter, sort, pageSize])
   
 
   //обработчик добавления нового item
@@ -122,21 +126,36 @@ function App() {
   }
 
   //обработчик установки страницы
-  const handlePage = (number=0) => {
+  const handlePage = (number, pagesize) => {
     setActivePage(number)
-    setItemsOnPage(filteredItems.slice(number*5, (number+1)*5))
+    setPageSize(pagesize)
+    setItemsOnPage(filteredItems.slice((number-1)*pagesize, number*pagesize))
   }
 
-  return (    
-    <div>
+
+  return (
+    
+    <div className="todo">
+
       <h2>ToDo</h2>
+      
       <AddItem handleAddItem={handleAddItem}/>
       <SortFilterPanel filter={filter} sort={sort} handleFilter={handleFilteredItems} handleSort={handleSort}/>
       {alertMessege && <span className="alert-empty-items">{alertMessege}</span>}
       <List items={itemsOnPage} handleDeleteItem = {handleDeleteItem} handleEditItem={handleEditItem}/>
-      <Pagination pages={countOfPages} activePage={activePage} handlePage={handlePage}/>
+      {/* { <PaginationMy pages={countOfPages} activePage={activePage + 1} handlePage={handlePage}/> } */}
+      <Pagination 
+        style={{alignSelf: 'center'}}
+        onChange={handlePage} 
+        total={countOfPages} 
+        defaultCurrent={1}
+        current={activePage}
+        defaultPageSize={pageSize} 
+        pageSize={pageSize}
+        // showSizeChanger={false}
+      />
     </div>
   );
 }
-
+postgresql://postgres:@localhost:/<database>
 export default App;
