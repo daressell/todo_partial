@@ -85,6 +85,8 @@ function App() {
       else{
         setActivePage(countOfPages - 1)
       }
+    }else{
+      setActivePage(0)
     }
     
     setFilter('all')
