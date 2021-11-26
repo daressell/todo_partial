@@ -157,5 +157,4 @@ function App() {
     </div>
   );
 }
-postgresql://postgres:@localhost:/<database>
 export default App;
