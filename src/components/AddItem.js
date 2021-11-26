@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { Input } from "antd";
 
 export const AddItem = ({handleAddItem}) => {
   const [itemName, setItemName] = useState('');
@@ -8,8 +9,11 @@ export const AddItem = ({handleAddItem}) => {
   }
 
   return(
-    <form className="add-item-form" onSubmit={(e) => {handleAddItem(e, itemName); setItemName('')}}>
-      <input type="text" size="40" value={itemName} placeholder="Gonna do..." onChange={changeText}></input>
-    </form>
+    <Input
+      value={itemName}
+      onChange={changeText}
+      onPressEnter={(e) => {handleAddItem(e, itemName); setItemName('')}}
+    >
+    </Input>
   )
 }

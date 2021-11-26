@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import { AddItem } from "./components/AddItem";
 import { List } from "./components/List";
-import { PaginationMy } from "./components/PaginationMy";
 import { SortFilterPanel } from "./components/SortFilterPanel";
 import uuid from 'react-native-uuid';
 import { Pagination, Row, Col } from "antd";
 
 
 function App() {
-  const [items, setItems] = useState(localStorage.getItem('items'))
+  const [items, setItems] = useState("[]")
   const [filter, setFilter] = useState('all')
   const [sort, setSort] = useState(0)
   const [activePage, setActivePage] = useState(1)
@@ -17,11 +16,7 @@ function App() {
   const [itemsOnPage, setItemsOnPage] = useState(filteredItems.slice(0, 5)); // изначально отображаются только первые 5 item
   const [countOfPages, setCountOfPages] = useState(0)
   const [pageSize, setPageSize] = useState(5)
-  // вызывается каждый раз при обновлении данных:
-  //-----------(сортировка, изменения колчиества(удаление, добавление), изменения страницы и фильтров)
-  // необходим для обновления списка отфильтрованных items и отображаемых items
-  // reverse использовался, чтобы отображать последние внесенные с самого начала, 
-  // для того, чтобы не изменять саму переменную, исользовал конструкцию -> Array.slice(0).reverse()
+
   useEffect(() => {
     let updateFilteredItems
     const itemsParse = JSON.parse(items)
@@ -38,15 +33,13 @@ function App() {
     // setCountOfPages(pagesCount)
     setCountOfPages(updateFilteredItems.length)
     
-    const updateShowItems = updateFilteredItems.slice((activePage)*pageSize, (activePage+1)*pageSize)
-    console.log('updateShowItems', updateShowItems);
-    console.log('pageSize', pageSize);
+    const updateShowItems = updateFilteredItems.slice((activePage-1)*pageSize, (activePage)*pageSize)
     if(updateShowItems.length){
       setAlertMessege('')
       setfilteredItems(updateFilteredItems)
       setItemsOnPage(updateShowItems)
     }else if(activePage){
-      setActivePage(activePage-1)
+      setActivePage(activePage - 1)
     }else{
       setfilteredItems(updateFilteredItems)
       setAlertMessege("Items is empty ^_^")
@@ -86,10 +79,10 @@ function App() {
         setActivePage(countOfPages)
       }
       else{
-        setActivePage(countOfPages - 1)
+        setActivePage(countOfPages)
       }
     }else{
-      setActivePage(0)
+      setActivePage(1)
     }
     
     setFilter('all')
@@ -99,12 +92,12 @@ function App() {
 
   // обработчик установки фильтра
   const handleFilteredItems = (typeFilter='all') => {
-    setActivePage(0)
+    setActivePage(1)
     setFilter(typeFilter)
   }
   // обработчик установки сортировки
   const handleSort = (sortType) => {
-    setActivePage(0)
+    setActivePage(1)
     setSort(sortType)
   }
 
@@ -128,32 +121,35 @@ function App() {
   const handlePage = (number, pagesize) => {
     setActivePage(number)
     setPageSize(pagesize)
-    setItemsOnPage(filteredItems.slice((number-1)*pagesize, number*pagesize))
+    setItemsOnPage(filteredItems.slice((number)*pagesize, (number+1)*pagesize))
   }
 
-
   return (
-    
-    <div className="todo">
-
-      <h2>ToDo</h2>
-      
-      <AddItem handleAddItem={handleAddItem}/>
-      <SortFilterPanel filter={filter} sort={sort} handleFilter={handleFilteredItems} handleSort={handleSort}/>
-      {alertMessege && <span className="alert-empty-items">{alertMessege}</span>}
-      <List items={itemsOnPage} handleDeleteItem = {handleDeleteItem} handleEditItem={handleEditItem}/>
-      {/* { <PaginationMy pages={countOfPages} activePage={activePage + 1} handlePage={handlePage}/> } */}
-      <Pagination 
-        style={{alignSelf: 'center'}}
-        onChange={handlePage} 
-        total={countOfPages} 
-        defaultCurrent={1}
-        current={activePage}
-        defaultPageSize={pageSize} 
-        pageSize={pageSize}
-        // showSizeChanger={false}
-      />
-    </div>
+    <Row justify='center'>
+      <Col span={10}>
+        <Row justify='center'>
+          <h2>ToDo</h2>
+        </Row>
+        <Row justify='center'>
+          <AddItem handleAddItem={handleAddItem}/>
+        </Row>
+        <SortFilterPanel filter={filter} sort={sort} handleFilter={handleFilteredItems} handleSort={handleSort}/>
+        <List items={itemsOnPage} handleDeleteItem = {handleDeleteItem} handleEditItem={handleEditItem}/>
+        <Row justify='center'>
+          <Pagination 
+            style={{alignSelf: 'center'}}
+            onChange={handlePage} 
+            total={countOfPages} 
+            defaultCurrent={0}
+            current={activePage}
+            defaultPageSize={pageSize} 
+            pageSize={pageSize}
+            pageSizeOptions={[5, 10, 15, 20]}
+            hideOnSinglePage={true}
+          />
+        </Row>
+      </Col>
+    </Row>
   );
 }
 export default App;

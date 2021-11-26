@@ -1,20 +1,53 @@
+import { Row, Button, Col, Typography } from "antd"
+
 export const SortFilterPanel = ({filter, sort, handleFilter, handleSort}) => {
   return(
-    <div className="sort-filter-panel">
-      <div className="filters">
-        <span className={filter === 'all' ? 'filter active' : 'filter'} onClick={() => handleFilter('all')}>All</span>
-        <span className={filter === 'done' ? 'filter active' : 'filter'} onClick={() => handleFilter('done')}>Done</span>
-        <span className={filter === 'undone' ? 'filter active' : 'filter'} onClick={() => handleFilter('undone')}>Undone</span>
-      </div>
-      <div className="sorts">
-        Sort by Date
-        <span className={sort === 1 ? 'sort active' : 'sort'} onClick={() => handleSort(1)}>
-          <i className="fas fa-arrow-up"></i>
-        </span>
-        <span className={sort === -1 ? 'sort active' : 'sort'} onClick={() => handleSort(-1)}>
-          <i className="fas fa-arrow-down"></i>
-        </span>
-      </div>
-    </div>
+    <Row>
+      <Col span={12}>
+        <Row>
+          <Button 
+            type={filter === 'all' ? 'primary' : 'default'} 
+            onClick={() => handleFilter('all')}
+          >
+            All
+          </Button>
+          <Button 
+            type={filter === 'done' ? 'primary' : 'default'} 
+            onClick={() => handleFilter('done')}
+          >
+            Done
+          </Button>
+          <Button 
+            type={filter === 'undone' ? 'primary' : 'default'} 
+            onClick={() => handleFilter('undone')}
+          >
+            Undone
+          </Button>
+
+        </Row>
+      </Col>
+      <Col span={12}>
+        <Row justify='end'>
+          <Typography.Text
+          >
+            Sort by date
+          </Typography.Text>
+          
+          <Button 
+            type={sort === 1 ? 'primary' : 'default'} 
+            onClick={() =>handleSort(1)}
+          >
+            New
+          </Button>
+          <Button 
+            type={sort === -1 ? 'primary' : 'default'} 
+            onClick={() => handleSort(-1)}
+          >
+            Old
+          </Button>
+
+        </Row>
+      </Col>
+    </Row>
   )
 }
