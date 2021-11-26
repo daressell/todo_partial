@@ -4,7 +4,7 @@ const Item = ({item, handleDeleteItem, handleEditItem}) => {
   const [inputField, setInputField] = useState(false);
   const [newName, setNewName] = useState(item.name);
   const [status, setStatus] = useState(item.status)
-
+  const sone = 123
   const changeText = (e) => {
     setNewName(e.target.value)
   }
