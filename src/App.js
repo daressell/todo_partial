@@ -17,7 +17,7 @@ function App() {
   const [itemsOnPage, setItemsOnPage] = useState(filteredItems.slice(0, 5)); // изначально отображаются только первые 5 item
   const [countOfPages, setCountOfPages] = useState(0)
   const [pageSize, setPageSize] = useState(5)
-
+  const qwe = 123
   // вызывается каждый раз при обновлении данных:
   //-----------(сортировка, изменения колчиества(удаление, добавление), изменения страницы и фильтров)
   // необходим для обновления списка отфильтрованных items и отображаемых items
