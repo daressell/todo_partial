@@ -4,17 +4,18 @@ import { List } from "./components/List";
 import { Pagination } from "./components/Pagination";
 import { SortFilterPanel } from "./components/SortFilterPanel";
 import uuid from 'react-native-uuid';
-import { storage } from "./db";
 
 
 function App() {
-  if(!localStorage.items) localStorage.setItem('items', JSON.stringify(storage))
+  // if(!localStorage.items) localStorage.setItem('items', JSON.stringify(storage))
   const [items, setItems] = useState("[]")
   const [filter, setFilter] = useState('all')
   const [sort, setSort] = useState(0)
-  const [page, setPage] = useState(0)
+  const [activePage, setActivePage] = useState(0)
+  const [alertMessege, setAlertMessege] = useState('')
   const [filteredItems, setfilteredItems] = useState(JSON.parse(items));
   const [itemsOnPage, setItemsOnPage] = useState(filteredItems.slice(0, 5)); // изначально отображаются только первые 5 item
+  const [countOfPages, setCountOfPages] = useState()
 
   // вызывается каждый раз при обновлении данных:
   //-----------(сортировка, изменения колчиества(удаление, добавление), изменения страницы и фильтров)
@@ -31,19 +32,41 @@ function App() {
       updateFilteredItems = itemsParse.slice(0).reverse().filter(item => item.status === filter)
     }
     if(sort){
-      updateFilteredItems.sort(() => sort)      
+      updateFilteredItems.sort(() => sort)
     }
-    const updateShowItems = updateFilteredItems.slice(page*5, (page+1)*5)
-    setfilteredItems(updateFilteredItems)
-    setItemsOnPage(updateShowItems)
+    const pagesCount = Math.ceil(updateFilteredItems.length/5);
+    setCountOfPages(pagesCount)
+    
+    const updateShowItems = updateFilteredItems.slice(activePage*5, (activePage+1)*5)
+    if(updateShowItems.length){
+      setAlertMessege('')
+      setfilteredItems(updateFilteredItems)
+      setItemsOnPage(updateShowItems)
+    }else if(activePage){
+      setActivePage(activePage-1)
+    }else{
+      setfilteredItems(updateFilteredItems)
+      setAlertMessege("Items is empty ^_^")
+      setItemsOnPage([])
+    }
+     
     localStorage.setItem('items', items)
-  }, [items, page, filter, sort])
+
+  }, [items, activePage, filter, sort])
   
 
   //обработчик добавления нового item
   const handleAddItem = (e, name) => {
     const reg = /[\wа-яА-Я]/;
-    
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    const curDate = new Date()
+    const timeObj = {}
+    timeObj.date = `${curDate.getDate()} ${months[curDate.getMonth()]}`
+    let createdTime = ''    
+    curDate.getHours().toString().length === 2 ? createdTime += curDate.getHours().toString() : createdTime += '0' + curDate.getHours().toString()
+    createdTime += ':'
+    curDate.getMinutes().toString().length === 2 ? createdTime += curDate.getMinutes().toString() : createdTime += '0' + curDate.getMinutes().toString()
+    timeObj.time = createdTime
     e.preventDefault();
     if(!name.match(reg)){
       return 0
@@ -53,48 +76,42 @@ function App() {
       id: uuid.v4(),
       name: name.trim(),
       status: "undone",
-      date: new Date()
+      createdAt: timeObj
     }
+    if(sort === -1){
+      if(itemsOnPage.length === 5){
+        setActivePage(countOfPages)
+      }
+      else{
+        setActivePage(countOfPages - 1)
+      }
+    }
+    
+    setFilter('all')
+
     setItems(JSON.stringify([...cashStorage, newItem]))
   }
 
   // обработчик установки фильтра
   const handleFilteredItems = (typeFilter='all') => {
-    setPage(0)
+    setActivePage(0)
     setFilter(typeFilter)
   }
   // обработчик установки сортировки
   const handleSort = (sortType) => {
+    setActivePage(0)
     setSort(sortType)
   }
 
   // обработчик удаления item
   const handleDeleteItem = (id) => {
-    const updateStorageItems = JSON.parse(items).filter(item => item.id !== id)    
+    const updateStorageItems = JSON.parse(items).filter(item => item.id !== id)
     setItems(JSON.stringify(updateStorageItems))
-  }  
-
-  //обработчик изменения item.status
-  const handleChangeStatus = (newStatus, id) => {
-    changeItemParametr('status', newStatus, id)
   }
 
   //обработчик изменения item.name
-  const handleEditItem = (newName, id) => {
-    changeItemParametr('name', newName, id)
-  }
-
-  //обработчик установки страницы
-  const handlePage = (number=0) => {
-    setPage(number)
-    setItemsOnPage(filteredItems.slice(number*5, (number+1)*5))
-  }
-
-  //хелпер функция для изменения параметра item.<parName> на значение parVal
-  const changeItemParametr = (parName, parVal, id) => {
+  const handleEditItem = (parName, parVal, id) => {
     const updateStorageItems = JSON.parse(items)
-    // строка создания копии item
-    // исправил способ изменения параметра в item, чтобы не проходиться по всем с помощью map
     const itemEditPar = updateStorageItems.find(item => item.id === id)
     const itemIndex = updateStorageItems.findIndex(item => item.id === id)
     itemEditPar[parName] = parVal
@@ -102,13 +119,20 @@ function App() {
     setItems(JSON.stringify(updateStorageItems))
   }
 
+  //обработчик установки страницы
+  const handlePage = (number=0) => {
+    setActivePage(number)
+    setItemsOnPage(filteredItems.slice(number*5, (number+1)*5))
+  }
+
   return (    
     <div>
-      <h1 style={{alignSelf: "center"}}>ToDo</h1>
+      <h2>ToDo</h2>
       <AddItem handleAddItem={handleAddItem}/>
       <SortFilterPanel filter={filter} sort={sort} handleFilter={handleFilteredItems} handleSort={handleSort}/>
-      <List items={itemsOnPage} handleDeleteItem = {handleDeleteItem} handleEditItem={handleEditItem} handleChangeStatus={handleChangeStatus}/>
-      <Pagination itemsCount={filteredItems.length} handlePage={handlePage}/>
+      {alertMessege && <span className="alert-empty-items">{alertMessege}</span>}
+      <List items={itemsOnPage} handleDeleteItem = {handleDeleteItem} handleEditItem={handleEditItem}/>
+      <Pagination pages={countOfPages} activePage={activePage} handlePage={handlePage}/>
     </div>
   );
 }
