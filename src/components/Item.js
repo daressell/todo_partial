@@ -1,9 +1,7 @@
-import { useState } from "react";
 import {Col, Row, Checkbox, Button, Typography} from "antd"
 import { DeleteOutlined } from '@ant-design/icons';
 
 const Item = ({item, handleDeleteItem, handleEditItem}) => {
-  const [status, setStatus] = useState(item.status)
 
   const handleEditName = (newName) => {
     const reg = /[\wа-яА-Я]/;
@@ -13,21 +11,21 @@ const Item = ({item, handleDeleteItem, handleEditItem}) => {
     }
   }
 
+  const handleEditStatus = () => {
+    if(item.status === 'done'){
+      handleEditItem('status', 'undone', item.id)
+    }
+    else{
+      handleEditItem('status', 'done', item.id)
+    }    
+  }
+
   return (
     <Row justify='center' className='item'>
       <Col span={3} className='item-data'>
         <Checkbox
-          checked={status === 'done' ? true : false}
-          onChange={() => {
-                            if(status === 'done'){
-                              setStatus('undone');
-                              handleEditItem('status', 'undone', item.id)
-                            }
-                            else{
-                              setStatus('done');
-                              handleEditItem('status', 'done', item.id)
-                            }
-                            }}
+          checked={item.status === 'done' ? true : false}
+          onChange={handleEditStatus}
         ></Checkbox>
       </Col>
       <Col span={14} className='item-data'>

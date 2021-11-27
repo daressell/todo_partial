@@ -8,11 +8,17 @@ export const AddItem = ({handleAddItem}) => {
     setItemName(e.target.value)
   }
 
+  const handlePressEnter = (e) => {
+    e.preventDefault()
+    handleAddItem(e.target.value);
+    setItemName('');
+  }
+
   return(
     <Input
       value={itemName}
       onChange={changeText}
-      onPressEnter={(e) => {handleAddItem(e, itemName); setItemName('')}}
+      onPressEnter={handlePressEnter}
     >
     </Input>
   )

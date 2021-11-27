@@ -8,3 +8,4 @@ export const storage = [
 ]
 
 // localStorage.setItem('items', JSON.stringify(storage))
+localStorage.setItem('items', '[]')

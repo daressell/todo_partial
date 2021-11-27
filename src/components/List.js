@@ -1,16 +1,16 @@
 import Item from "./Item";
-import {Col, Row} from "antd"
+import {Col} from "antd"
 
 export const List = ({items, handleDeleteItem, handleEditItem}) => {
   return(
-    <Row gutter={[0, 20]} className="items">
+    <Col span={24} className="items">
       {items.map(item => {
         return(
-          <Col span={24} key={item.id} >
+          <div key={item.id}>
             <Item item = {item} handleDeleteItem = {handleDeleteItem} handleEditItem={handleEditItem}/>
-          </Col>
+          </div>
         )
       })}
-    </Row>
+    </Col>
   )  
 }

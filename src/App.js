@@ -3,17 +3,18 @@ import { AddItem } from "./components/AddItem";
 import { List } from "./components/List";
 import { SortFilterPanel } from "./components/SortFilterPanel";
 import uuid from 'react-native-uuid';
-import { Pagination, Row, Col } from "antd";
+import { Pagination, Row, Col, Alert } from "antd";
 
 
 function App() {
-  const [items, setItems] = useState("[]")
+  if (!localStorage.getItem('items')) localStorage.setItem('items', '[]')
+  const [items, setItems] = useState(localStorage.getItem('items'))
   const [filter, setFilter] = useState('all')
   const [sort, setSort] = useState(0)
   const [activePage, setActivePage] = useState(1)
   const [alertMessege, setAlertMessege] = useState('')
-  const [filteredItems, setfilteredItems] = useState(JSON.parse(items));
-  const [itemsOnPage, setItemsOnPage] = useState(filteredItems.slice(0, 5)); // изначально отображаются только первые 5 item
+  const [filteredItems, setfilteredItems] = useState([]);
+  const [itemsOnPage, setItemsOnPage] = useState([]);
   const [countOfPages, setCountOfPages] = useState(0)
   const [pageSize, setPageSize] = useState(5)
 
@@ -52,7 +53,7 @@ function App() {
   
 
   //обработчик добавления нового item
-  const handleAddItem = (e, name) => {
+  const handleAddItem = (name) => {
     const reg = /[\wа-яА-Я]/;
     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
     const curDate = new Date()
@@ -63,7 +64,6 @@ function App() {
     createdTime += ':'
     curDate.getMinutes().toString().length === 2 ? createdTime += curDate.getMinutes().toString() : createdTime += '0' + curDate.getMinutes().toString()
     timeObj.time = createdTime
-    e.preventDefault();
     if(!name.match(reg)){
       return 0
     }
@@ -126,7 +126,7 @@ function App() {
 
   return (
     <Row justify='center'>
-      <Col span={10}>
+      <Col span={12}>
         <Row justify='center'>
           <h2>ToDo</h2>
         </Row>
@@ -134,10 +134,18 @@ function App() {
           <AddItem handleAddItem={handleAddItem}/>
         </Row>
         <SortFilterPanel filter={filter} sort={sort} handleFilter={handleFilteredItems} handleSort={handleSort}/>
-        <List items={itemsOnPage} handleDeleteItem = {handleDeleteItem} handleEditItem={handleEditItem}/>
+       {alertMessege && <Row justify='center'>
+          <Alert
+            message={alertMessege}
+            type='info'
+          />
+        </Row>}
+        <Row justify='center'>
+          <List items={itemsOnPage} handleDeleteItem = {handleDeleteItem} handleEditItem={handleEditItem}/>
+        </Row>
         <Row justify='center'>
           <Pagination 
-            style={{alignSelf: 'center'}}
+            style={{marginBottom: '50px'}}
             onChange={handlePage} 
             total={countOfPages} 
             defaultCurrent={0}

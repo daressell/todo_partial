@@ -1,11 +1,11 @@
 .ant-row.item{
-  border: 1px solid #d9d9d9;
+  border: 1px solid #91d5ff;
   height: 80px;
   font-size: 14px;
   line-height: 80px;
-  background: #84caff;
+  background: #e6f7ff;
   border-radius: 4px;
-  color: white;
+  color: black;
 }
 
 .ant-col.item-data{
