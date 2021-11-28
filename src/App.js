@@ -88,8 +88,8 @@ function App() {
   const handleDeleteItem = (id) => {
     const updateStorageItems = items.filter(item => item.id !== id)
     setItems(updateStorageItems)
-    !itemsOnPage 
-      && countOfItems 
+    itemsOnPage.length === 1 
+      && countOfItems
       && setActivePage(activePage - 1)
   }
 
