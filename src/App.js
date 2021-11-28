@@ -2,53 +2,49 @@ import { useEffect, useState } from "react";
 import { AddItem } from "./components/AddItem";
 import { List } from "./components/List";
 import { SortFilterPanel } from "./components/SortFilterPanel";
-import uuid from 'react-native-uuid';
 import { Pagination, Row, Col, Alert } from "antd";
-
+import { storage } from "./db";
+import uuid from 'react-native-uuid';
 
 function App() {
-  if (!localStorage.getItem('items')) localStorage.setItem('items', '[]')
+  if (!localStorage.getItem('items')) localStorage.setItem('items', JSON.stringify(storage))
+  
   const [items, setItems] = useState(localStorage.getItem('items'))
   const [filter, setFilter] = useState('all')
-  const [sort, setSort] = useState(0)
+  const [sort, setSort] = useState(1)
   const [activePage, setActivePage] = useState(1)
   const [alertMessege, setAlertMessege] = useState('')
-  const [filteredItems, setfilteredItems] = useState([]);
   const [itemsOnPage, setItemsOnPage] = useState([]);
-  const [countOfPages, setCountOfPages] = useState(0)
+  const [countOfItems, setCountOfItems] = useState(0)
   const [pageSize, setPageSize] = useState(5)
 
   useEffect(() => {
-    let updateFilteredItems
-    const itemsParse = JSON.parse(items)
-    if(filter === 'all'){
-      updateFilteredItems = itemsParse.slice(0).reverse()
-    }
-    else{
-      updateFilteredItems = itemsParse.slice(0).reverse().filter(item => item.status === filter)
-    }
-    if(sort){
-      updateFilteredItems.sort(() => sort)
-    }
-    
-    // setCountOfPages(pagesCount)
-    setCountOfPages(updateFilteredItems.length)
-    
+    let updateFilteredItems = JSON.parse(items)
+    filter === 'all' 
+      ? updateFilteredItems = updateFilteredItems.reverse()
+      : updateFilteredItems = updateFilteredItems.reverse().filter(item => item.status === filter)
+    updateFilteredItems.sort(() => sort)
     const updateShowItems = updateFilteredItems.slice((activePage-1)*pageSize, (activePage)*pageSize)
+    const countItems = updateFilteredItems.length
     if(updateShowItems.length){
       setAlertMessege('')
-      setfilteredItems(updateFilteredItems)
-      setItemsOnPage(updateShowItems)
-    }else if(activePage){
-      setActivePage(activePage - 1)
-    }else{
-      setfilteredItems(updateFilteredItems)
-      setAlertMessege("Items is empty ^_^")
-      setItemsOnPage([])
+    }else if(sort === -1){
+      setActivePage(Math.ceil(countItems/pageSize))
+    }else if(updateShowItems.length === 0 && updateFilteredItems.length){
+      setActivePage(Math.ceil((countItems-1)/pageSize))
+    }    
+    setCountOfItems(countItems)
+    if(JSON.parse(items).length !== JSON.parse(localStorage.getItem('items')).length){
+      setFilter('all')
+      if(sort === 1) setActivePage(1)
+      if(sort === -1) setActivePage(Math.ceil(countItems/pageSize))  
     }
-     
+    if(!updateFilteredItems.length){
+      const emptyItems = filter.charAt(0).toUpperCase() + filter.slice(1) + " items is empty ^_^";
+      setAlertMessege(emptyItems)
+    }
+    setItemsOnPage(updateShowItems)
     localStorage.setItem('items', items)
-
   }, [items, activePage, filter, sort, pageSize])
   
 
@@ -74,30 +70,15 @@ function App() {
       status: "undone",
       createdAt: timeObj
     }
-    if(sort === -1){
-      if(itemsOnPage.length === 5){
-        setActivePage(countOfPages)
-      }
-      else{
-        setActivePage(countOfPages)
-      }
-    }else{
-      setActivePage(1)
-    }
-    
-    setFilter('all')
-
     setItems(JSON.stringify([...cashStorage, newItem]))
   }
 
   // обработчик установки фильтра
   const handleFilteredItems = (typeFilter='all') => {
-    setActivePage(1)
     setFilter(typeFilter)
   }
   // обработчик установки сортировки
   const handleSort = (sortType) => {
-    setActivePage(1)
     setSort(sortType)
   }
 
@@ -120,9 +101,9 @@ function App() {
   //обработчик установки страницы
   const handlePage = (number, pagesize) => {
     setActivePage(number)
-    setPageSize(pagesize)
-    setItemsOnPage(filteredItems.slice((number)*pagesize, (number+1)*pagesize))
+    pagesize !== pageSize && handlePageSize(pagesize)
   }
+  const handlePageSize = (pagesize) => setPageSize(pagesize)
 
   return (
     <Row justify='center'>
@@ -146,11 +127,11 @@ function App() {
         <Row justify='center'>
           <Pagination 
             style={{marginBottom: '50px'}}
-            onChange={handlePage} 
-            total={countOfPages} 
+            onChange={handlePage}
+            total={countOfItems}
             defaultCurrent={0}
             current={activePage}
-            defaultPageSize={pageSize} 
+            defaultPageSize={pageSize}
             pageSize={pageSize}
             pageSizeOptions={[5, 10, 15, 20]}
             hideOnSinglePage={true}
