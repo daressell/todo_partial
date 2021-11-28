@@ -70,6 +70,7 @@ function App() {
       status: "undone",
       createdAt: timeObj
     }
+    setActivePage(1)
     setFilter('all')
     setSort('new')
     setItems([...cashStorage, newItem])
@@ -119,7 +120,7 @@ function App() {
             handleAddItem={handleAddItem}
           />
         </Row>
-        <SortFilterPanel 
+        <SortFilterPanel
           filter={filter} 
           sort={sort} 
           handleFilter={handleFilteredItems} 

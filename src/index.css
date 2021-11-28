@@ -16,3 +16,7 @@
 .items{
   margin: 10px 0;
 }
+
+.ant-typography-edit-content.item-name{
+  z-index: 1;
+}

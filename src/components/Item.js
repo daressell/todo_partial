@@ -3,7 +3,7 @@ import { DeleteOutlined } from '@ant-design/icons';
 import { useState } from "react";
 
 const Item = ({item, handleDeleteItem, handleEditItem}) => {
-  const [editText, setEditText] = useState(item.name);
+  const [name, setName] = useState(item.name);
 
   // this handler doesnt work with useEffect in App.js
   // this handler change array itemsOnPage in List.js because using map method which return new array
@@ -15,7 +15,7 @@ const Item = ({item, handleDeleteItem, handleEditItem}) => {
     const reg = /[\wа-яА-Я]/;
     if(newName.match(reg)){
       item.name = newName
-      setEditText(newName)
+      setName(newName)
     }
   }
 
@@ -29,7 +29,7 @@ const Item = ({item, handleDeleteItem, handleEditItem}) => {
   }
 
   return (
-    <Row justify='center' className='item'>
+    <Row justify='center' className='item' gutter={[20, 0]}>
       <Col span={3} className='item-data'>
         <Checkbox
           checked={item.status === 'done' ? true : false}
@@ -38,9 +38,11 @@ const Item = ({item, handleDeleteItem, handleEditItem}) => {
       </Col>
       <Col span={14} className='item-data'>
         <Typography.Text
+          className="item-name"
+          ellipsis={true}
           editable={{onChange: handleEditName}}
         >
-          {editText}
+          {name}
         </Typography.Text>
       </Col>
       <Col span={5}>

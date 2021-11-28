@@ -2,7 +2,7 @@ import { Row, Button, Col, Typography } from "antd"
 
 export const SortFilterPanel = ({filter, sort, handleFilter, handleSort}) => {
   return(
-    <Row>
+    <Row style={{marginTop: 10}}>
       <Col span={12}>
         <Row>
           <Button 
