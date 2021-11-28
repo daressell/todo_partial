@@ -34,14 +34,14 @@ export const SortFilterPanel = ({filter, sort, handleFilter, handleSort}) => {
           </Typography.Text>
           
           <Button 
-            type={sort === 1 ? 'primary' : 'default'} 
-            onClick={() =>handleSort(1)}
+            type={sort === 'new' ? 'primary' : 'default'} 
+            onClick={() =>handleSort('new')}
           >
             New
           </Button>
           <Button 
-            type={sort === -1 ? 'primary' : 'default'} 
-            onClick={() => handleSort(-1)}
+            type={sort === 'old' ? 'primary' : 'default'} 
+            onClick={() => handleSort('old')}
           >
             Old
           </Button>

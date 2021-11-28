@@ -3,15 +3,14 @@ import { AddItem } from "./components/AddItem";
 import { List } from "./components/List";
 import { SortFilterPanel } from "./components/SortFilterPanel";
 import { Pagination, Row, Col, Alert } from "antd";
-import { storage } from "./db";
 import uuid from 'react-native-uuid';
 
 function App() {
-  if (!localStorage.getItem('items')) localStorage.setItem('items', JSON.stringify(storage))
+  if (!localStorage.getItem('items')) localStorage.setItem('items', '[]')
   
-  const [items, setItems] = useState(localStorage.getItem('items'))
+  const [items, setItems] = useState(JSON.parse(localStorage.getItem('items')))
   const [filter, setFilter] = useState('all')
-  const [sort, setSort] = useState(1)
+  const [sort, setSort] = useState('new')
   const [activePage, setActivePage] = useState(1)
   const [alertMessege, setAlertMessege] = useState('')
   const [itemsOnPage, setItemsOnPage] = useState([]);
@@ -19,40 +18,43 @@ function App() {
   const [pageSize, setPageSize] = useState(5)
 
   useEffect(() => {
-    let updateFilteredItems = JSON.parse(items)
-    filter === 'all' 
-      ? updateFilteredItems = updateFilteredItems.reverse()
-      : updateFilteredItems = updateFilteredItems.reverse().filter(item => item.status === filter)
-    updateFilteredItems.sort(() => sort)
-    const updateShowItems = updateFilteredItems.slice((activePage-1)*pageSize, (activePage)*pageSize)
-    const countItems = updateFilteredItems.length
-    if(updateShowItems.length){
-      setAlertMessege('')
-    }else if(sort === -1){
-      setActivePage(Math.ceil(countItems/pageSize))
-    }else if(updateShowItems.length === 0 && updateFilteredItems.length){
-      setActivePage(Math.ceil((countItems-1)/pageSize))
-    }    
-    setCountOfItems(countItems)
-    if(JSON.parse(items).length !== JSON.parse(localStorage.getItem('items')).length){
-      setFilter('all')
-      if(sort === 1) setActivePage(1)
-      if(sort === -1) setActivePage(Math.ceil(countItems/pageSize))  
-    }
-    if(!updateFilteredItems.length){
-      const emptyItems = filter.charAt(0).toUpperCase() + filter.slice(1) + " items is empty ^_^";
-      setAlertMessege(emptyItems)
-    }
-    setItemsOnPage(updateShowItems)
-    localStorage.setItem('items', items)
+    localStorage.setItem('items', JSON.stringify(items));
+    let updateFilteredItems = items.slice(0) // most important string - create a new array(not ref of items)
+
+    // filtering items
+    filter !== 'all' && (updateFilteredItems = updateFilteredItems.filter(item => item.status === filter))
+
+    //sorting items
+    sort === 'new' && (updateFilteredItems = updateFilteredItems.reverse())  
+
+    //if  updateFilteredItems is empty create message alert
+    let messegeAlert = ''
+    !updateFilteredItems.length
+      && (messegeAlert = filter.charAt(0).toUpperCase() + filter.slice(1) + " items is empty ^_^")
+    setAlertMessege(messegeAlert)
+
+    // create count of items for pagination
+    setCountOfItems(updateFilteredItems.length)
+
+    // get items on page
+    updateFilteredItems = updateFilteredItems.slice((activePage-1)*pageSize, (activePage)*pageSize)
+    
+    setItemsOnPage(updateFilteredItems)
   }, [items, activePage, filter, sort, pageSize])
   
 
-  //обработчик добавления нового item
   const handleAddItem = (name) => {
-    const reg = /[\wа-яА-Я]/;
+    const reg = /[\wа-яА-Я]/; //regex for russian/english language
+    // dont create if name not include russian/english symbols
+    if(!name.match(reg)){
+      return 0
+    }
+
     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
     const curDate = new Date()
+
+    // timeObj has key date(string with month and day) of create and time(string with hours and minutes) of create 
+    // with fix when 1 character (0-9 minutes of 0-9 hours)
     const timeObj = {}
     timeObj.date = `${curDate.getDate()} ${months[curDate.getMonth()]}`
     let createdTime = ''    
@@ -60,50 +62,48 @@ function App() {
     createdTime += ':'
     curDate.getMinutes().toString().length === 2 ? createdTime += curDate.getMinutes().toString() : createdTime += '0' + curDate.getMinutes().toString()
     timeObj.time = createdTime
-    if(!name.match(reg)){
-      return 0
-    }
-    const cashStorage = JSON.parse(items)
+
+    const cashStorage = items
     const newItem = {
       id: uuid.v4(),
       name: name.trim(),
       status: "undone",
       createdAt: timeObj
     }
-    setItems(JSON.stringify([...cashStorage, newItem]))
+    setFilter('all')
+    setSort('new')
+    setItems([...cashStorage, newItem])
   }
 
-  // обработчик установки фильтра
   const handleFilteredItems = (typeFilter='all') => {
     setFilter(typeFilter)
+    setActivePage(1)
   }
-  // обработчик установки сортировки
-  const handleSort = (sortType) => {
+
+  const handleSort = (sortType='new') => {
     setSort(sortType)
+    setActivePage(1)
   }
 
-  // обработчик удаления item
   const handleDeleteItem = (id) => {
-    const updateStorageItems = JSON.parse(items).filter(item => item.id !== id)
-    setItems(JSON.stringify(updateStorageItems))
+    const updateStorageItems = items.filter(item => item.id !== id)
+    setItems(updateStorageItems)
   }
 
-  //обработчик изменения item.name
+  //handler work only with item.status but in the future may be using for other props 
   const handleEditItem = (parName, parVal, id) => {
-    const updateStorageItems = JSON.parse(items)
-    const itemEditPar = updateStorageItems.find(item => item.id === id)
+    const updateStorageItems = items.slice(0) // most important string - create a new array(not ref of items)
+    const item = updateStorageItems.find(item => item.id === id)
     const itemIndex = updateStorageItems.findIndex(item => item.id === id)
-    itemEditPar[parName] = parVal
-    updateStorageItems[itemIndex] = itemEditPar
-    setItems(JSON.stringify(updateStorageItems))
+    item[parName] = parVal
+    updateStorageItems[itemIndex] = item
+    setItems(updateStorageItems)
   }
 
-  //обработчик установки страницы
-  const handlePage = (number, pagesize) => {
+  const handlePagination = (number, pagesize) => {
     setActivePage(number)
-    pagesize !== pageSize && handlePageSize(pagesize)
+    setPageSize(pagesize)
   }
-  const handlePageSize = (pagesize) => setPageSize(pagesize)
 
   return (
     <Row justify='center'>
@@ -112,9 +112,16 @@ function App() {
           <h2>ToDo</h2>
         </Row>
         <Row justify='center'>
-          <AddItem handleAddItem={handleAddItem}/>
+          <AddItem 
+            handleAddItem={handleAddItem}
+          />
         </Row>
-        <SortFilterPanel filter={filter} sort={sort} handleFilter={handleFilteredItems} handleSort={handleSort}/>
+        <SortFilterPanel 
+          filter={filter} 
+          sort={sort} 
+          handleFilter={handleFilteredItems} 
+          handleSort={handleSort}
+        />
        {alertMessege && <Row justify='center'>
           <Alert
             message={alertMessege}
@@ -122,12 +129,16 @@ function App() {
           />
         </Row>}
         <Row justify='center'>
-          <List items={itemsOnPage} handleDeleteItem = {handleDeleteItem} handleEditItem={handleEditItem}/>
+          <List 
+            items={itemsOnPage} 
+            handleDeleteItem = {handleDeleteItem} 
+            handleEditItem={handleEditItem}
+          />
         </Row>
         <Row justify='center'>
           <Pagination 
             style={{marginBottom: '50px'}}
-            onChange={handlePage}
+            onChange={handlePagination}
             total={countOfItems}
             defaultCurrent={0}
             current={activePage}

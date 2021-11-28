@@ -1,13 +1,21 @@
 import {Col, Row, Checkbox, Button, Typography} from "antd"
 import { DeleteOutlined } from '@ant-design/icons';
+import { useState } from "react";
 
 const Item = ({item, handleDeleteItem, handleEditItem}) => {
+  const [editText, setEditText] = useState(item.name);
 
+  // this handler doesnt work with useEffect in App.js
+  // this handler change array itemsOnPage in List.js because using map method which return new array
+
+  // this handler can be use for edit status of item
+  // but it is doestn change itemsOnPage filtering items
+  // while not trigger useEffect
   const handleEditName = (newName) => {
     const reg = /[\wа-яА-Я]/;
     if(newName.match(reg)){
       item.name = newName
-      handleEditItem('name', newName, item.id)
+      setEditText(newName)
     }
   }
 
@@ -32,7 +40,7 @@ const Item = ({item, handleDeleteItem, handleEditItem}) => {
         <Typography.Text
           editable={{onChange: handleEditName}}
         >
-          {item.name}
+          {editText}
         </Typography.Text>
       </Col>
       <Col span={5}>
