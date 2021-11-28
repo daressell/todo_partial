@@ -25,7 +25,7 @@ function App() {
     filter !== 'all' && (updateFilteredItems = updateFilteredItems.filter(item => item.status === filter))
 
     //sorting items
-    sort === 'new' && (updateFilteredItems = updateFilteredItems.reverse())  
+    sort === 'new' && (updateFilteredItems = updateFilteredItems.reverse())
 
     //if  updateFilteredItems is empty create message alert
     let messegeAlert = ''
@@ -37,9 +37,9 @@ function App() {
     setCountOfItems(updateFilteredItems.length)
 
     // get items on page
-    updateFilteredItems = updateFilteredItems.slice((activePage-1)*pageSize, (activePage)*pageSize)
+    const updateShowItems = updateFilteredItems.slice((activePage-1)*pageSize, (activePage)*pageSize)
     
-    setItemsOnPage(updateFilteredItems)
+    setItemsOnPage(updateShowItems)
   }, [items, activePage, filter, sort, pageSize])
   
 
@@ -88,6 +88,9 @@ function App() {
   const handleDeleteItem = (id) => {
     const updateStorageItems = items.filter(item => item.id !== id)
     setItems(updateStorageItems)
+    !itemsOnPage 
+      && countOfItems 
+      && setActivePage(activePage - 1)
   }
 
   //handler work only with item.status but in the future may be using for other props 
