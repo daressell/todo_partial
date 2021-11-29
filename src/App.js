@@ -111,7 +111,7 @@ function App() {
 
   return (
     <Row justify='center'>
-      <Col span={12}>
+      <Col xxl={12} xl={13} lg={16} md={20} sm={22} xs={23}>
         <Row justify='center'>
           <h2>ToDo</h2>
         </Row>
@@ -139,9 +139,9 @@ function App() {
             handleEditItem={handleEditItem}
           />
         </Row>
-        <Row justify='center'>
+        <Row justify='center' >
           <Pagination 
-            style={{marginBottom: '50px'}}
+            style={{marginBottom: '50px', marginTop: 50}}
             onChange={handlePagination}
             total={countOfItems}
             defaultCurrent={0}

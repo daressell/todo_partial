@@ -6,7 +6,7 @@ export const List = ({items, handleDeleteItem, handleEditItem}) => {
     <Col span={24} className="items">
       {items.map(item => {
         return(
-          <div key={item.id} style={{marginTop: 10}}>
+          <div key={item.id} style={{marginTop: 10, maxHeight: 80}}>
             <Item item = {item} handleDeleteItem = {handleDeleteItem} handleEditItem={handleEditItem}/>
           </div>
         )

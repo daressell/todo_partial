@@ -29,7 +29,13 @@ const Item = ({item, handleDeleteItem, handleEditItem}) => {
   }
 
   return (
-    <Row justify='center' className='item' gutter={[20, 0]}>
+    <Row 
+    justify='center' 
+    className='item' 
+    gutter={[20, 0]}
+    align='middle'
+    style={{padding: 20}}
+    >
       <Col span={3} className='item-data'>
         <Checkbox
           checked={item.status === 'done' ? true : false}
@@ -46,7 +52,7 @@ const Item = ({item, handleDeleteItem, handleEditItem}) => {
         </Typography.Text>
       </Col>
       <Col span={5}>
-        {`${item.createdAt.time} ${item.createdAt.date}`}
+        {item.createdAt.time + ' ' + item.createdAt.date}
       </Col>
       <Col span={2}>
         <Button
