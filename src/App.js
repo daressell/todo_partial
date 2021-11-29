@@ -93,7 +93,7 @@ function App() {
       && countOfItems
       && setActivePage(activePage - 1)
   }
-
+  //
   //handler work only with item.status but in the future may be using for other props 
   const handleEditItem = (parName, parVal, id) => {
     const updateStorageItems = [...items] // most important string - create a new array(not ref of items)
