@@ -85,7 +85,7 @@ function App() {
     setSort(sortType)
     setActivePage(1)
   }
-
+  //
   const handleDeleteItem = (id) => {
     const updateStorageItems = items.filter(item => item.id !== id)
     setItems(updateStorageItems)
