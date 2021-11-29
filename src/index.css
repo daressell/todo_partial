@@ -1,0 +1,22 @@
+.ant-row.item{
+  border: 1px solid #91d5ff;
+  height: 80px;
+  font-size: 14px;
+  line-height: 80px;
+  background: #e6f7ff;
+  border-radius: 4px;
+  color: black;
+}
+
+.ant-col.item-data{
+  display: flex;
+  justify-content: center;
+}
+
+.items{
+  margin: 10px 0;
+}
+
+.ant-typography-edit-content.item-name{
+  z-index: 1;
+}
