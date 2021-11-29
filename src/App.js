@@ -45,7 +45,7 @@ function App() {
 
   const handleAddItem = (name) => {
     const reg = /[\wа-яА-Я]/; //regex for russian/english language
-    //// dont create if name not include russian/english symbols
+    // dont create if name not include russian/english symbols
     if(!name.match(reg)){
       return 0
     }
@@ -85,7 +85,7 @@ function App() {
     setSort(sortType)
     setActivePage(1)
   }
-  //
+
   const handleDeleteItem = (id) => {
     const updateStorageItems = items.filter(item => item.id !== id)
     setItems(updateStorageItems)
@@ -93,7 +93,7 @@ function App() {
       && countOfItems
       && setActivePage(activePage - 1)
   }
-  //
+  
   //handler work only with item.status but in the future may be using for other props 
   const handleEditItem = (parName, parVal, id) => {
     const updateStorageItems = [...items] // most important string - create a new array(not ref of items)
