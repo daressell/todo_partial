@@ -45,7 +45,7 @@ function App() {
 
   const handleAddItem = (name) => {
     const reg = /[\wа-яА-Я]/; //regex for russian/english language
-    // dont create if name not include russian/english symbols
+    //// dont create if name not include russian/english symbols
     if(!name.match(reg)){
       return 0
     }
