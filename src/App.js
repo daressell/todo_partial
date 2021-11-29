@@ -19,7 +19,7 @@ function App() {
 
   useEffect(() => {
     localStorage.setItem('items', JSON.stringify(items));
-    let updateFilteredItems = items.slice(0) // most important string - create a new array(not ref of items)
+    let updateFilteredItems = [...items] // most important string - create a new array(not ref of items)
 
     // filtering items
     filter !== 'all' && (updateFilteredItems = updateFilteredItems.filter(item => item.status === filter))
@@ -96,7 +96,7 @@ function App() {
 
   //handler work only with item.status but in the future may be using for other props 
   const handleEditItem = (parName, parVal, id) => {
-    const updateStorageItems = items.slice(0) // most important string - create a new array(not ref of items)
+    const updateStorageItems = [...items] // most important string - create a new array(not ref of items)
     const item = updateStorageItems.find(item => item.id === id)
     const itemIndex = updateStorageItems.findIndex(item => item.id === id)
     item[parName] = parVal

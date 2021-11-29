@@ -55,7 +55,7 @@ const Item = ({item, handleDeleteItem, handleEditItem}) => {
           icon={<DeleteOutlined />}
           onClick={() => handleDeleteItem(item.id)}
         >
-        </Button>        
+        </Button>
       </Col>
     </Row>
   );
