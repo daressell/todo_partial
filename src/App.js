@@ -4,76 +4,65 @@ import { List } from "./components/List";
 import { SortFilterPanel } from "./components/SortFilterPanel";
 import { Pagination, Row, Col, Alert } from "antd";
 import uuid from 'react-native-uuid';
+import axios from 'axios';
 
 function App() {
   if (!localStorage.getItem('items')) localStorage.setItem('items', '[]')
   
-  const [items, setItems] = useState(JSON.parse(localStorage.getItem('items')))
-  const [filter, setFilter] = useState('all')
-  const [sort, setSort] = useState('new')
+  const [filter, setFilter] = useState('')
+  const [sort, setSort] = useState('asc')
   const [activePage, setActivePage] = useState(1)
   const [alertMessege, setAlertMessege] = useState('')
   const [itemsOnPage, setItemsOnPage] = useState([]);
   const [countOfItems, setCountOfItems] = useState(0)
   const [pageSize, setPageSize] = useState(5)
 
+
   useEffect(() => {
-    localStorage.setItem('items', JSON.stringify(items));
-    let updateFilteredItems = [...items] // most important string - create a new array(not ref of items)
+    getItems(sort, filter)
+  }, [activePage, filter, sort])
 
-    // filtering items
-    filter !== 'all' && (updateFilteredItems = updateFilteredItems.filter(item => item.status === filter))
-
-    //sorting items
-    sort === 'new' && (updateFilteredItems = updateFilteredItems.reverse())
-
-    //if  updateFilteredItems is empty create message alert
-    let messegeAlert = ''
-    !updateFilteredItems.length
-      && (messegeAlert = filter.charAt(0).toUpperCase() + filter.slice(1) + " items is empty ^_^")
-    setAlertMessege(messegeAlert)
-
-    // create count of items for pagination
-    setCountOfItems(updateFilteredItems.length)
-
-    // get items on page
-    const updateShowItems = updateFilteredItems.slice((activePage-1)*pageSize, (activePage)*pageSize)
-    
-    setItemsOnPage(updateShowItems)
-  }, [items, activePage, filter, sort, pageSize])
+  const getItems = (sort = 'asc', filter='') => {
+    console.log();
+    axios.get(`https://todo-api-learning.herokuapp.com/v1/tasks/6?${filter && `filterBy=${filter}`}&order=${sort}`).then((res, rej) => {
+      if(res.status === 200){
+        const showItems = res.data.reverse().slice((activePage-1)*pageSize, (activePage)*pageSize)
+        if(res.data.length && !showItems.length){
+          setActivePage(activePage - 1)
+          setAlertMessege('')
+        }else{
+          setAlertMessege('items is empty')
+        }
+        setItemsOnPage(showItems);
+        setCountOfItems(res.data.length)
+      }
+      else console.log(rej);
+    })
+  }  
   
 
   const handleAddItem = (name) => {
-    const reg = /[\wа-яА-Я]/; //regex for russian/english language
-    // dont create if name not include russian/english symbols
+    const reg = /[\wа-яА-Я]/;
     if(!name.match(reg)){
       return 0
     }
+    axios.post(`https://todo-api-learning.herokuapp.com/v1/task/6`,
+      {
+        name: name,
+        done: false
+      }
+    ).then(res => {
+        if(res.status === 200){
+          setActivePage(1)
+          const newSort = 'asc'
+          const newFilter = ''
+          setFilter(newFilter)
+          setSort(newSort)
+          getItems(newSort, newFilter)
 
-    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-    const curDate = new Date()
-
-    // timeObj has key date(string with month and day) of create and time(string with hours and minutes) of create 
-    // with fix when 1 character (0-9 minutes of 0-9 hours)
-    const timeObj = {}
-    timeObj.date = `${curDate.getDate()} ${months[curDate.getMonth()]}`
-    let createdTime = ''    
-    curDate.getHours().toString().length === 2 ? createdTime += curDate.getHours().toString() : createdTime += '0' + curDate.getHours().toString()
-    createdTime += ':'
-    curDate.getMinutes().toString().length === 2 ? createdTime += curDate.getMinutes().toString() : createdTime += '0' + curDate.getMinutes().toString()
-    timeObj.time = createdTime
-
-    const cashStorage = items
-    const newItem = {
-      id: uuid.v4(),
-      name: name.trim(),
-      status: "undone",
-      createdAt: timeObj
-    }
-    setActivePage(1)
-    setFilter('all')
-    setSort('new')
-    setItems([...cashStorage, newItem])
+        }
+        else{ console.log(res)}
+      })
   }
 
   const handleFilteredItems = (typeFilter='all') => {
@@ -87,21 +76,13 @@ function App() {
   }
 
   const handleDeleteItem = (id) => {
-    const updateStorageItems = items.filter(item => item.id !== id)
-    setItems(updateStorageItems)
-    itemsOnPage.length === 1 
-      && countOfItems
-      && setActivePage(activePage - 1)
-  }
-  
-  //handler work only with item.status but in the future may be using for other props 
-  const handleEditItem = (parName, parVal, id) => {
-    const updateStorageItems = [...items] // most important string - create a new array(not ref of items)
-    const item = updateStorageItems.find(item => item.id === id)
-    const itemIndex = updateStorageItems.findIndex(item => item.id === id)
-    item[parName] = parVal
-    updateStorageItems[itemIndex] = item
-    setItems(updateStorageItems)
+    axios.delete(`https://todo-api-learning.herokuapp.com/v1/task/6/${id}`)
+      .then(res => {
+        if(res.status === 204){
+          getItems()
+        }
+        else console.log(res);
+      })
   }
 
   const handlePagination = (number, pagesize) => {
@@ -135,8 +116,7 @@ function App() {
         <Row justify='center'>
           <List 
             items={itemsOnPage} 
-            handleDeleteItem = {handleDeleteItem} 
-            handleEditItem={handleEditItem}
+            handleDeleteItem = {handleDeleteItem}
           />
         </Row>
         <Row justify='center' >

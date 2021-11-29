@@ -6,8 +6,8 @@ export const SortFilterPanel = ({filter, sort, handleFilter, handleSort}) => {
       <Col span={12}>
         <Row>
           <Button 
-            type={filter === 'all' ? 'primary' : 'default'} 
-            onClick={() => handleFilter('all')}
+            type={filter === '' ? 'primary' : 'default'} 
+            onClick={() => handleFilter('')}
           >
             All
           </Button>
@@ -34,14 +34,14 @@ export const SortFilterPanel = ({filter, sort, handleFilter, handleSort}) => {
           </Typography.Text>
           
           <Button 
-            type={sort === 'new' ? 'primary' : 'default'} 
-            onClick={() =>handleSort('new')}
+            type={sort === 'asc' ? 'primary' : 'default'} 
+            onClick={() =>handleSort('asc')}
           >
             New
           </Button>
           <Button 
-            type={sort === 'old' ? 'primary' : 'default'} 
-            onClick={() => handleSort('old')}
+            type={sort === 'odescld' ? 'primary' : 'default'} 
+            onClick={() => handleSort('desc')}
           >
             Old
           </Button>
