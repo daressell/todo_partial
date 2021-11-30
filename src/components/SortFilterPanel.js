@@ -37,13 +37,13 @@ export const SortFilterPanel = ({filter, sort, handleFilter, handleSort}) => {
             type={sort === 'asc' ? 'primary' : 'default'} 
             onClick={() =>handleSort('asc')}
           >
-            New
+            Old
           </Button>
           <Button 
             type={sort === 'desc' ? 'primary' : 'default'} 
             onClick={() => handleSort('desc')}
           >
-            Old
+            New
           </Button>
 
         </Row>

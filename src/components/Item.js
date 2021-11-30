@@ -17,23 +17,22 @@ const Item = ({item, handleDeleteItem, setAlertMessege}) => {
   curDate.getMinutes().toString().length === 2 ? createdTime += curDate.getMinutes().toString() : createdTime += '0' + curDate.getMinutes().toString()
   timeObj.time = createdTime
 
-  const handleEditItem = (newName = name, newDone = done) => {
-    const reg = /[\wа-яА-Я]/;  
-    if(newName.match(reg)){
-      axios.patch(`https://todo-api-learning.herokuapp.com/v1/task/6/${item.uuid}`, 
-        { 
-          name: newName, 
-          done : newDone
-        }
-      ).then(res => {
-          if(res.status === 200){
-            setName(newName)
-            setDone(newDone)
+  const handleEditItem = async (newName = name, newDone = done) => {
+    try{
+      const reg = /[\wа-яА-Я]/;  
+      if(newName.match(reg)){
+        axios.patch(`https://todo-api-learning.herokuapp.com/v1/task/6/${item.uuid}`, 
+          { 
+            name: newName, 
+            done : newDone
           }
-        }
-      ).catch(err => {
-        setAlertMessege({type: 'error', text: err.response.data.message});
-      })
+        )
+        setName(newName)
+        setDone(newDone)
+      }
+
+    }catch(err){
+      setAlertMessege({type: 'error', text: err.response.data.message});
     }
   }
 

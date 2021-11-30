@@ -7,64 +7,58 @@ import axios from 'axios';
 
 function App() {  
   const [filter, setFilter] = useState('')
-  const [sort, setSort] = useState('asc')
+  const [sort, setSort] = useState('desc')
   const [activePage, setActivePage] = useState(1)
   const [alertMessege, setAlertMessege] = useState({type: 'info', text: ''})
   const [itemsOnPage, setItemsOnPage] = useState([]);
   const [countOfItems, setCountOfItems] = useState(0)
   const [pageSize, setPageSize] = useState(5)
+  const [changeItems, setChangeImtes] = useState(false)
 
-
-  useEffect(() => {
-    getItems(sort, filter)
-  }, [activePage, filter, sort])
-
-  const getItems = (sort = 'asc', filter='') => {
-    axios.get(`https://todo-api-learning.herokuapp.com/v1/tasks/6?${filter && `filterBy=${filter}`}&order=${sort}`).then((res, rej) => {
-      if(res.status === 200){
-        const showItems = res.data.reverse().slice((activePage-1)*pageSize, (activePage)*pageSize)
-        res.data.length
-          ? setAlertMessege({type: 'info', text: ''})
-          : setAlertMessege({type: 'info', text: 'items is empty'})
-        res.data.length && !showItems.length
-          && setActivePage(activePage - 1)
+  useEffect(() => { 
+    const getItems = async () => {      
+      try{
+        const res = await axios.get(`https://todo-api-learning.herokuapp.com/v1/tasks/6?${filter && `filterBy=${filter}`}&order=${sort}`)
+        const showItems = res.data.slice((activePage-1)*pageSize, (activePage)*pageSize)
         setItemsOnPage(showItems);
-        setCountOfItems(res.data.length)
+        if(res.data.length){
+          setAlertMessege({type: 'info', text: ''})
+          setCountOfItems(res.data.length)
+        }else{
+          setAlertMessege({type: 'info', text: 'items is empty'})
+        }
       }
-      else{
-        console.log(res);
-      };
-    })
-  }  
-  
-  const handleAddItem = (name) => {
-    const reg = /[\wа-яА-Я]/;
-    if(!name.match(reg)){
-      return 0
+      catch(err){
+        setAlertMessege({type: 'error', text: err.response.data.message})
+      }   
     }
-    axios.post(`https://todo-api-learning.herokuapp.com/v1/task/6`,
-      {
-        name: name,
-        done: false
-      }
-    ).then((res, rej) => {
-          if(res.status === 200){
-            setActivePage(1)
-            const newSort = 'asc'
-            const newFilter = ''
-            setFilter(newFilter)
-            setSort(newSort)
-            getItems(newSort, newFilter)
+    getItems()
+  }, [sort, filter, activePage, pageSize, changeItems])
 
-          }
-          else{
-            return rej
-          }
+   
+  
+  const handleAddItem = async (name) => {    
+    try{
+      const reg = /[\wа-яА-Я]/;
+      if(!name.match(reg)){
+        return 0
+      }
+      await axios.post(`https://todo-api-learning.herokuapp.com/v1/task/6`, 
+        {
+          name: name,
+          done: false
         }
       )
-      .catch(err => {
-        setAlertMessege({type: 'error', text: err.response.data.message})
-      })
+      const newSort = 'desc'
+      const newFilter = ''
+      setChangeImtes(!changeItems)
+      setFilter(newFilter)
+      setSort(newSort)
+      setActivePage(1)
+    }
+    catch(err){
+      setAlertMessege({type: 'error', text: err.response.data.message})
+    }
   }
 
   const handleFilteredItems = (typeFilter='all') => {
@@ -77,14 +71,16 @@ function App() {
     setActivePage(1)
   }
 
-  const handleDeleteItem = (id) => {
-    axios.delete(`https://todo-api-learning.herokuapp.com/v1/task/6/${id}`)
-      .then(res => {
-        if(res.status === 204){
-          getItems(sort, filter)
-        }
-        else console.log(res);
-      })
+  const handleDeleteItem = async (id) => {
+    try{
+      axios.delete(`https://todo-api-learning.herokuapp.com/v1/task/6/${id}`)
+      setChangeImtes(!changeItems)
+      if(countOfItems && !itemsOnPage.length){
+        setActivePage(activePage - 1)
+      } 
+    }catch(err){
+      setAlertMessege({type: 'error', text: err.response.data.message})
+    }
   }
 
   const handlePagination = (number, pagesize) => {
