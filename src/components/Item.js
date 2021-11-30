@@ -6,7 +6,7 @@ import axios from "axios";
 const Item = ({item, handleDeleteItem, getItems}) => {
   const [name, setName] = useState(item.name);
   const [done, setDone] = useState(item.done);
-  const [loadingDone, setLoadingDone] = useState(false)
+  const [loading, setLoading] = useState(false)
   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
   const curDate = new Date(Date.parse(item.createdAt))
 
@@ -20,7 +20,7 @@ const Item = ({item, handleDeleteItem, getItems}) => {
 
   const handleEditName = async (newName) => {
     try{
-      setLoadingDone(true)
+      setLoading(true)
       const reg = /[\wа-яА-Я]/;  
       if (newName.match(reg)){
         await axios.patch(`https://todo-api-learning.herokuapp.com/v1/task/6/${item.uuid}`, 
@@ -30,7 +30,7 @@ const Item = ({item, handleDeleteItem, getItems}) => {
           }
         )        
         setName(newName)
-        setLoadingDone(false)
+        setLoading(false)
       }
     } catch(err){
 
@@ -39,7 +39,7 @@ const Item = ({item, handleDeleteItem, getItems}) => {
 
   const handleChangeStatus = async (newDone) => {
     try{
-      setLoadingDone(true)
+      setLoading(true)
       await axios.patch(`https://todo-api-learning.herokuapp.com/v1/task/6/${item.uuid}`, 
         { 
           name: name, 
@@ -48,14 +48,14 @@ const Item = ({item, handleDeleteItem, getItems}) => {
       )
       setDone(newDone)
       getItems()
-      setLoadingDone(false)
+      setLoading(false)
     } catch(err){
       
     }    
   }
 
   return (
-    <Spin spinning={loadingDone}> 
+    <Spin spinning={loading}> 
     <Row 
     justify='center' 
     className='item' 
@@ -88,7 +88,7 @@ const Item = ({item, handleDeleteItem, getItems}) => {
           danger={true}
           type='primary'
           icon={<DeleteOutlined />}
-          onClick={() => {handleDeleteItem(item.uuid); setLoadingDone(true)}}
+          onClick={() => {handleDeleteItem(item.uuid); setLoading(true)}}
         >
         </Button>
       </Col>
