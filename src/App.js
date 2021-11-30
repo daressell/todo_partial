@@ -13,7 +13,6 @@ function App() {
   const [itemsOnPage, setItemsOnPage] = useState([]);
   const [countOfItems, setCountOfItems] = useState(0)
   const [pageSize, setPageSize] = useState(5)
-  const [changeItems, setChangeImtes] = useState(false)
 
   const getItems = async () => {
     try{
@@ -34,7 +33,7 @@ function App() {
   
   useEffect(() => {
     getItems()
-  }, [sort, filter, activePage, pageSize, changeItems])
+  }, [sort, filter, activePage, pageSize])
   
   const handleAddItem = async (name) => {   
     try{
