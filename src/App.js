@@ -15,45 +15,40 @@ function App() {
   const [pageSize, setPageSize] = useState(5)
   const [changeItems, setChangeImtes] = useState(false)
 
-  useEffect(() => { 
-    const getItems = async () => {      
-      try{
-        const res = await axios.get(`https://todo-api-learning.herokuapp.com/v1/tasks/6?${filter && `filterBy=${filter}`}&order=${sort}`)
-        const showItems = res.data.slice((activePage-1)*pageSize, (activePage)*pageSize)
-        setItemsOnPage(showItems);
-        if(res.data.length){
-          setAlertMessege({type: 'info', text: ''})
-          setCountOfItems(res.data.length)
-        }else{
-          setAlertMessege({type: 'info', text: 'items is empty'})
-        }
+  const getItems = async () => {
+    try{
+      const res = await axios.get(`https://todo-api-learning.herokuapp.com/v1/tasks/6?${filter && `filterBy=${filter}`}&order=${sort}`)
+      const showItems = res.data.slice((activePage-1)*pageSize, (activePage)*pageSize)
+      setItemsOnPage(showItems);
+      if(res.data.length){
+        setAlertMessege({type: 'info', text: ''})
+        setCountOfItems(res.data.length)
+      }else{
+        setAlertMessege({type: 'info', text: 'items is empty'})
       }
-      catch(err){
-        setAlertMessege({type: 'error', text: err.response.data.message})
-      }   
     }
+    catch(err){
+      setAlertMessege({type: 'error', text: err.response.data.message})
+    }   
+  }
+  
+  useEffect(() => {
     getItems()
   }, [sort, filter, activePage, pageSize, changeItems])
-
-   
   
-  const handleAddItem = async (name) => {    
+  const handleAddItem = async (name) => {   
     try{
       const reg = /[\wа-яА-Я]/;
       if(!name.match(reg)){
         return 0
       }
+      const newItem = {name, done:false}
       await axios.post(`https://todo-api-learning.herokuapp.com/v1/task/6`, 
-        {
-          name: name,
-          done: false
-        }
+        newItem
       )
-      const newSort = 'desc'
-      const newFilter = ''
-      setChangeImtes(!changeItems)
-      setFilter(newFilter)
-      setSort(newSort)
+      getItems()
+      setFilter('')
+      setSort('desc')
       setActivePage(1)
     }
     catch(err){
@@ -73,13 +68,10 @@ function App() {
 
   const handleDeleteItem = async (id) => {
     try{
-      axios.delete(`https://todo-api-learning.herokuapp.com/v1/task/6/${id}`)
-      setChangeImtes(!changeItems)
-      if(countOfItems && !itemsOnPage.length){
-        setActivePage(activePage - 1)
-      } 
+      await axios.delete(`https://todo-api-learning.herokuapp.com/v1/task/6/${id}`)      
+      getItems()
     }catch(err){
-      setAlertMessege({type: 'error', text: err.response.data.message})
+      setAlertMessege({type: 'error', text: err})
     }
   }
 
@@ -112,7 +104,8 @@ function App() {
           />
         </Row>}
         <Row justify='center'>
-          <List 
+          <List
+            pageSize={pageSize}
             items={itemsOnPage} 
             handleDeleteItem = {handleDeleteItem}
             setAlertMessege={setAlertMessege}

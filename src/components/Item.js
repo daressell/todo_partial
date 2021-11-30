@@ -20,7 +20,7 @@ const Item = ({item, handleDeleteItem, setAlertMessege}) => {
   const handleEditItem = async (newName = name, newDone = done) => {
     try{
       const reg = /[\wа-яА-Я]/;  
-      if(newName.match(reg)){
+      if (newName.match(reg)){
         axios.patch(`https://todo-api-learning.herokuapp.com/v1/task/6/${item.uuid}`, 
           { 
             name: newName, 
@@ -42,7 +42,7 @@ const Item = ({item, handleDeleteItem, setAlertMessege}) => {
     className='item' 
     gutter={[20, 0]}
     align='middle'
-    style={{padding: 20}}
+    style={{padding: 20, marginTop: 10}}
     >
       <Col span={3} className='item-data'>
         <Checkbox
