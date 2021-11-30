@@ -1,11 +1,12 @@
-import {Col, Row, Checkbox, Button, Typography} from "antd"
+import {Col, Row, Checkbox, Button, Typography, Spin} from "antd"
 import { DeleteOutlined } from '@ant-design/icons';
 import { useState } from "react";
 import axios from "axios";
 
-const Item = ({item, handleDeleteItem, setAlertMessege}) => {
+const Item = ({item, handleDeleteItem, getItems}) => {
   const [name, setName] = useState(item.name);
   const [done, setDone] = useState(item.done);
+  const [loadingDone, setLoadingDone] = useState(false)
   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
   const curDate = new Date(Date.parse(item.createdAt))
 
@@ -17,26 +18,44 @@ const Item = ({item, handleDeleteItem, setAlertMessege}) => {
   curDate.getMinutes().toString().length === 2 ? createdTime += curDate.getMinutes().toString() : createdTime += '0' + curDate.getMinutes().toString()
   timeObj.time = createdTime
 
-  const handleEditItem = async (newName = name, newDone = done) => {
+  const handleEditName = async (newName) => {
     try{
+      setLoadingDone(true)
       const reg = /[\wа-яА-Я]/;  
       if (newName.match(reg)){
-        axios.patch(`https://todo-api-learning.herokuapp.com/v1/task/6/${item.uuid}`, 
+        await axios.patch(`https://todo-api-learning.herokuapp.com/v1/task/6/${item.uuid}`, 
           { 
             name: newName, 
-            done : newDone
+            done : done
           }
-        )
+        )        
         setName(newName)
-        setDone(newDone)
+        setLoadingDone(false)
       }
+    } catch(err){
 
-    }catch(err){
-      setAlertMessege({type: 'error', text: err.response.data.message});
     }
   }
 
+  const handleChangeStatus = async (newDone) => {
+    try{
+      setLoadingDone(true)
+      await axios.patch(`https://todo-api-learning.herokuapp.com/v1/task/6/${item.uuid}`, 
+        { 
+          name: name, 
+          done : newDone
+        }
+      )
+      setDone(newDone)
+      getItems()
+      setLoadingDone(false)
+    } catch(err){
+      
+    }    
+  }
+
   return (
+    <Spin spinning={loadingDone}> 
     <Row 
     justify='center' 
     className='item' 
@@ -47,14 +66,16 @@ const Item = ({item, handleDeleteItem, setAlertMessege}) => {
       <Col span={3} className='item-data'>
         <Checkbox
           checked={done ? true : false}
-          onChange={() => handleEditItem(name, !done)}
+          onChange={() => handleChangeStatus(!done)}
         ></Checkbox>
+        
+        
       </Col>
       <Col span={14} className='item-data'>
         <Typography.Text
           className="item-name"
           ellipsis={true}
-          editable={{onChange: handleEditItem}}
+          editable={{onChange: handleEditName}}
         >
           {name}
         </Typography.Text>
@@ -67,11 +88,12 @@ const Item = ({item, handleDeleteItem, setAlertMessege}) => {
           danger={true}
           type='primary'
           icon={<DeleteOutlined />}
-          onClick={() => handleDeleteItem(item.uuid)}
+          onClick={() => {handleDeleteItem(item.uuid); setLoadingDone(true)}}
         >
         </Button>
       </Col>
     </Row>
+    </Spin>
   );
 }
  
