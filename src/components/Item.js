@@ -1,12 +1,12 @@
-import { Col, Row, Checkbox, Button, Typography, Spin } from "antd";
-import { DeleteOutlined } from "@ant-design/icons";
-import { useState } from "react";
-import axios from "axios";
+import { Col, Row, Checkbox, Button, Typography, Spin } from "antd"
+import { DeleteOutlined } from "@ant-design/icons"
+import { useState } from "react"
+import axios from "axios"
 
 const Item = ({ item, handleDeleteItem, getItems }) => {
-  const [name, setName] = useState(item.name);
-  const [done, setDone] = useState(item.done);
-  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState(item.name)
+  const [done, setDone] = useState(item.done)
+  const [loading, setLoading] = useState(false)
   const months = [
     "January",
     "February",
@@ -20,25 +20,25 @@ const Item = ({ item, handleDeleteItem, getItems }) => {
     "October",
     "November",
     "December",
-  ];
-  const curDate = new Date(Date.parse(item.createdAt));
+  ]
+  const curDate = new Date(Date.parse(item.createdAt))
 
-  const timeObj = {};
-  timeObj.date = `${curDate.getDate()} ${months[curDate.getMonth()]}`;
-  let createdTime = "";
+  const timeObj = {}
+  timeObj.date = `${curDate.getDate()} ${months[curDate.getMonth()]}`
+  let createdTime = ""
   curDate.getHours().toString().length === 2
     ? (createdTime += curDate.getHours().toString())
-    : (createdTime += "0" + curDate.getHours().toString());
-  createdTime += ":";
+    : (createdTime += "0" + curDate.getHours().toString())
+  createdTime += ":"
   curDate.getMinutes().toString().length === 2
     ? (createdTime += curDate.getMinutes().toString())
-    : (createdTime += "0" + curDate.getMinutes().toString());
-  timeObj.time = createdTime;
+    : (createdTime += "0" + curDate.getMinutes().toString())
+  timeObj.time = createdTime
 
   const handleEditName = async (newName) => {
     try {
-      setLoading(true);
-      const reg = /[\wа-яА-Я]/;
+      setLoading(true)
+      const reg = /[\wа-яА-Я]/
       if (newName.match(reg)) {
         await axios.patch(
           `https://todo-api-learning.herokuapp.com/v1/task/6/${item.uuid}`,
@@ -46,28 +46,28 @@ const Item = ({ item, handleDeleteItem, getItems }) => {
             name: newName,
             done: done,
           }
-        );
-        setName(newName);
-        setLoading(false);
+        )
+        setName(newName)
+        setLoading(false)
       }
     } catch (err) {}
-  };
+  }
 
   const handleChangeStatus = async (newDone) => {
     try {
-      setLoading(true);
+      setLoading(true)
       await axios.patch(
         `https://todo-api-learning.herokuapp.com/v1/task/6/${item.uuid}`,
         {
           name: name,
           done: newDone,
         }
-      );
-      setDone(newDone);
-      getItems();
-      setLoading(false);
+      )
+      setDone(newDone)
+      getItems()
+      setLoading(false)
     } catch (err) {}
-  };
+  }
 
   return (
     <Spin spinning={loading}>
@@ -100,14 +100,14 @@ const Item = ({ item, handleDeleteItem, getItems }) => {
             type="primary"
             icon={<DeleteOutlined />}
             onClick={() => {
-              handleDeleteItem(item.uuid);
-              setLoading(true);
+              handleDeleteItem(item.uuid)
+              setLoading(true)
             }}
           ></Button>
         </Col>
       </Row>
     </Spin>
-  );
-};
+  )
+}
 
-export default Item;
+export default Item

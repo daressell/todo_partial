@@ -1,18 +1,18 @@
-import { useEffect, useState } from "react";
-import { AddItem } from "./components/AddItem";
-import { List } from "./components/List";
-import { SortFilterPanel } from "./components/SortFilterPanel";
-import { Pagination, Row, Col, Spin, notification } from "antd";
-import axios from "axios";
+import { useEffect, useState } from "react"
+import { AddItem } from "./components/AddItem"
+import { List } from "./components/List"
+import { SortFilterPanel } from "./components/SortFilterPanel"
+import { Pagination, Row, Col, Spin, notification } from "antd"
+import axios from "axios"
 
 function App() {
-  const [filter, setFilter] = useState("");
-  const [sort, setSort] = useState("desc");
-  const [activePage, setActivePage] = useState(1);
-  const [itemsOnPage, setItemsOnPage] = useState([]);
-  const [countOfItems, setCountOfItems] = useState(0);
-  const [pageSize, setPageSize] = useState(5);
-  const [loading, setLoading] = useState(false);
+  const [filter, setFilter] = useState("")
+  const [sort, setSort] = useState("desc")
+  const [activePage, setActivePage] = useState(1)
+  const [itemsOnPage, setItemsOnPage] = useState([])
+  const [countOfItems, setCountOfItems] = useState(0)
+  const [pageSize, setPageSize] = useState(5)
+  const [loading, setLoading] = useState(false)
 
   const getItems = async () => {
     try {
@@ -20,83 +20,83 @@ function App() {
         `https://todo-api-learning.herokuapp.com/v1/tasks/6?${
           filter && `filterBy=${filter}`
         }&order=${sort}`
-      );
+      )
       const showItems = res.data.slice(
         (activePage - 1) * pageSize,
         activePage * pageSize
-      );
-      setItemsOnPage(showItems);
+      )
+      setItemsOnPage(showItems)
       if (res.data.length !== 0) {
-        setCountOfItems(res.data.length);
+        setCountOfItems(res.data.length)
       } else {
-        alertMessege(`${filter} items is empty`, "info");
-        setCountOfItems(0);
+        alertMessege(`${filter} items is empty`, "info")
+        setCountOfItems(0)
       }
     } catch (err) {
-      alertMessege(err.response.data.message, "error");
+      alertMessege(err.response.data.message, "error")
     }
-  };
+  }
 
   useEffect(() => {
-    getItems();
-  }, [sort, filter, activePage, pageSize]);
+    getItems()
+  }, [sort, filter, activePage, pageSize])
 
   const handleAddItem = async (name) => {
     try {
-      const reg = /[\wа-яА-Я]/;
+      const reg = /[\wа-яА-Я]/
       if (!name.match(reg)) {
-        return 0;
+        return 0
       }
-      setLoading(true);
-      const newItem = { name, done: false };
+      setLoading(true)
+      const newItem = { name, done: false }
       await axios.post(
         `https://todo-api-learning.herokuapp.com/v1/task/6`,
         newItem
-      );
-      getItems();
-      setFilter("");
-      setSort("desc");
-      setActivePage(1);
-      setLoading(false);
+      )
+      getItems()
+      setFilter("")
+      setSort("desc")
+      setActivePage(1)
+      setLoading(false)
     } catch (err) {
-      alertMessege(err.response.data.message, "error");
+      alertMessege(err.response.data.message, "error")
     }
-  };
+  }
 
   const handleFilteredItems = (typeFilter = "all") => {
-    setFilter(typeFilter);
-    setActivePage(1);
-  };
+    setFilter(typeFilter)
+    setActivePage(1)
+  }
 
   const handleSort = (sortType = "new") => {
-    setSort(sortType);
-    setActivePage(1);
-  };
+    setSort(sortType)
+    setActivePage(1)
+  }
 
   const handleDeleteItem = async (id) => {
     try {
       await axios.delete(
         `https://todo-api-learning.herokuapp.com/v1/task/6/${id}`
-      );
-      getItems();
+      )
+      getItems()
     } catch (err) {
-      alertMessege(err.response.data.message, "error");
+      alertMessege(err.response.data.message, "error")
     }
-  };
+  }
 
   const handlePagination = (number, pagesize) => {
-    setActivePage(number);
-    setPageSize(pagesize);
-  };
+    setActivePage(number)
+    setPageSize(pagesize)
+  }
 
   const alertMessege = (text, type) => {
     {
       notification.open({
         description: text,
         type: type,
-      });
+      })
     }
-  };
+  }
 
   return (
     <Row justify="center">
@@ -138,6 +138,6 @@ function App() {
         </Spin>
       </Col>
     </Row>
-  );
+  )
 }
-export default App;
+export default App

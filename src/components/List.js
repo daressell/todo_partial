@@ -1,10 +1,10 @@
-import Item from "./Item";
-import { Col } from "antd";
+import Item from "./Item"
+import { Col } from "antd"
 
 export const List = ({ items, handleDeleteItem, handleEditItem, getItems }) => {
   return (
     <Col span={24} className="items">
-      {items.map((item, index) => {
+      {items.map((item) => {
         return (
           <div key={item.uuid} style={{ marginTop: 10, maxHeight: 80 }}>
             <Item
@@ -14,8 +14,8 @@ export const List = ({ items, handleDeleteItem, handleEditItem, getItems }) => {
               getItems={getItems}
             />
           </div>
-        );
+        )
       })}
     </Col>
-  );
-};
+  )
+}
