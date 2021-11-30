@@ -40,7 +40,7 @@ export const SortFilterPanel = ({filter, sort, handleFilter, handleSort}) => {
             New
           </Button>
           <Button 
-            type={sort === 'odescld' ? 'primary' : 'default'} 
+            type={sort === 'desc' ? 'primary' : 'default'} 
             onClick={() => handleSort('desc')}
           >
             Old

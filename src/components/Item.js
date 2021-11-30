@@ -3,9 +3,9 @@ import { DeleteOutlined } from '@ant-design/icons';
 import { useState } from "react";
 import axios from "axios";
 
-const Item = ({item, handleDeleteItem}) => {
+const Item = ({item, handleDeleteItem, setAlertMessege}) => {
   const [name, setName] = useState(item.name);
-  const [status, setStatus] = useState(item.status);
+  const [done, setDone] = useState(item.done);
   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
   const curDate = new Date(Date.parse(item.createdAt))
 
@@ -17,24 +17,23 @@ const Item = ({item, handleDeleteItem}) => {
   curDate.getMinutes().toString().length === 2 ? createdTime += curDate.getMinutes().toString() : createdTime += '0' + curDate.getMinutes().toString()
   timeObj.time = createdTime
 
-  const handleEditItem = (newName = name, newStatus = status) => {
-    newName === item.name && (newStatus = !newStatus)
-    const reg = /[\wа-яА-Я]/;    
-    if(newName.match(reg)){      
+  const handleEditItem = (newName = name, newDone = done) => {
+    const reg = /[\wа-яА-Я]/;  
+    if(newName.match(reg)){
       axios.patch(`https://todo-api-learning.herokuapp.com/v1/task/6/${item.uuid}`, 
         { 
           name: newName, 
-          done : status
+          done : newDone
         }
       ).then(res => {
-          console.log(res);
           if(res.status === 200){
             setName(newName)
-            setStatus(newStatus)
+            setDone(newDone)
           }
-          else console.log(res);
         }
-      )
+      ).catch(err => {
+        setAlertMessege({type: 'error', text: err.response.data.message});
+      })
     }
   }
 
@@ -48,8 +47,8 @@ const Item = ({item, handleDeleteItem}) => {
     >
       <Col span={3} className='item-data'>
         <Checkbox
-          checked={status ? true : false}
-          onChange={() => handleEditItem(name, status)}
+          checked={done ? true : false}
+          onChange={() => handleEditItem(name, !done)}
         ></Checkbox>
       </Col>
       <Col span={14} className='item-data'>

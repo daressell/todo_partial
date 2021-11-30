@@ -3,16 +3,13 @@ import { AddItem } from "./components/AddItem";
 import { List } from "./components/List";
 import { SortFilterPanel } from "./components/SortFilterPanel";
 import { Pagination, Row, Col, Alert } from "antd";
-import uuid from 'react-native-uuid';
 import axios from 'axios';
 
-function App() {
-  if (!localStorage.getItem('items')) localStorage.setItem('items', '[]')
-  
+function App() {  
   const [filter, setFilter] = useState('')
   const [sort, setSort] = useState('asc')
   const [activePage, setActivePage] = useState(1)
-  const [alertMessege, setAlertMessege] = useState('')
+  const [alertMessege, setAlertMessege] = useState({type: 'info', text: ''})
   const [itemsOnPage, setItemsOnPage] = useState([]);
   const [countOfItems, setCountOfItems] = useState(0)
   const [pageSize, setPageSize] = useState(5)
@@ -23,24 +20,23 @@ function App() {
   }, [activePage, filter, sort])
 
   const getItems = (sort = 'asc', filter='') => {
-    console.log();
     axios.get(`https://todo-api-learning.herokuapp.com/v1/tasks/6?${filter && `filterBy=${filter}`}&order=${sort}`).then((res, rej) => {
       if(res.status === 200){
         const showItems = res.data.reverse().slice((activePage-1)*pageSize, (activePage)*pageSize)
-        if(res.data.length && !showItems.length){
-          setActivePage(activePage - 1)
-          setAlertMessege('')
-        }else{
-          setAlertMessege('items is empty')
-        }
+        res.data.length
+          ? setAlertMessege({type: 'info', text: ''})
+          : setAlertMessege({type: 'info', text: 'items is empty'})
+        res.data.length && !showItems.length
+          && setActivePage(activePage - 1)
         setItemsOnPage(showItems);
         setCountOfItems(res.data.length)
       }
-      else console.log(rej);
+      else{
+        console.log(res);
+      };
     })
   }  
   
-
   const handleAddItem = (name) => {
     const reg = /[\wа-яА-Я]/;
     if(!name.match(reg)){
@@ -51,17 +47,23 @@ function App() {
         name: name,
         done: false
       }
-    ).then(res => {
-        if(res.status === 200){
-          setActivePage(1)
-          const newSort = 'asc'
-          const newFilter = ''
-          setFilter(newFilter)
-          setSort(newSort)
-          getItems(newSort, newFilter)
+    ).then((res, rej) => {
+          if(res.status === 200){
+            setActivePage(1)
+            const newSort = 'asc'
+            const newFilter = ''
+            setFilter(newFilter)
+            setSort(newSort)
+            getItems(newSort, newFilter)
 
+          }
+          else{
+            return rej
+          }
         }
-        else{ console.log(res)}
+      )
+      .catch(err => {
+        setAlertMessege({type: 'error', text: err.response.data.message})
       })
   }
 
@@ -79,7 +81,7 @@ function App() {
     axios.delete(`https://todo-api-learning.herokuapp.com/v1/task/6/${id}`)
       .then(res => {
         if(res.status === 204){
-          getItems()
+          getItems(sort, filter)
         }
         else console.log(res);
       })
@@ -107,16 +109,17 @@ function App() {
           handleFilter={handleFilteredItems} 
           handleSort={handleSort}
         />
-       {alertMessege && <Row justify='center'>
+       {alertMessege.text && <Row justify='center'>
           <Alert
-            message={alertMessege}
-            type='info'
+            message={alertMessege.text}
+            type={alertMessege.type}
           />
         </Row>}
         <Row justify='center'>
           <List 
             items={itemsOnPage} 
             handleDeleteItem = {handleDeleteItem}
+            setAlertMessege={setAlertMessege}
           />
         </Row>
         <Row justify='center' >
