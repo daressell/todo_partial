@@ -1,4 +1,4 @@
-.ant-row.item{
+.ant-row.item {
   border: 1px solid #91d5ff;
   font-size: 14px;
   background: #e6f7ff;
@@ -6,15 +6,15 @@
   color: black;
 }
 
-.ant-col.item-data{
+.ant-col.item-data {
   display: flex;
   justify-content: center;
-} */
+}
 
- .items{
+.items {
   margin: 10px 0;
 }
 
-.ant-typography-edit-content.item-name{
+.ant-typography-edit-content.item-name {
   z-index: 1;
 }

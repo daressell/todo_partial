@@ -1,70 +1,125 @@
-import {Col, Row, Checkbox, Button, Typography} from "antd"
-import { DeleteOutlined } from '@ant-design/icons';
-import { useState } from "react";
+import { Col, Row, Checkbox, Button, Typography, Spin, notification } from "antd"
+import { DeleteOutlined } from "@ant-design/icons"
+import { useState } from "react"
+import axios from "axios"
 
-const Item = ({item, handleDeleteItem, handleEditItem}) => {
-  const [name, setName] = useState(item.name);
+const Item = ({ item, handleDeleteItem, getItems }) => {
+  const [name, setName] = useState(item.name)
+  const [done, setDone] = useState(item.done)
+  const [loading, setLoading] = useState(false)
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ]
+  const curDate = new Date(Date.parse(item.createdAt))
 
-  // this handler doesnt work with useEffect in App.js
-  // this handler change array itemsOnPage in List.js because using map method which return new array
+  const timeObj = {}
+  timeObj.date = `${curDate.getDate()} ${months[curDate.getMonth()]}`
+  let createdTime = ""
+  curDate.getHours().toString().length === 2
+    ? (createdTime += curDate.getHours().toString())
+    : (createdTime += "0" + curDate.getHours().toString())
+  createdTime += ":"
+  curDate.getMinutes().toString().length === 2
+    ? (createdTime += curDate.getMinutes().toString())
+    : (createdTime += "0" + curDate.getMinutes().toString())
+  timeObj.time = createdTime
 
-  // this handler can be use for edit status of item
-  // but it is doestn change itemsOnPage filtering items
-  // while not trigger useEffect
-  const handleEditName = (newName) => {
-    const reg = /[\wа-яА-Я]/;
-    if(newName.match(reg)){
-      item.name = newName
-      setName(newName)
+  const handleEditName = async (newName) => {
+    try {
+      setLoading(true)
+      const reg = /[\wа-яА-Я]/
+      if (newName.match(reg)) {
+        await axios.patch(
+          `https://todo-api-learning.herokuapp.com/v1/task/6/${item.uuid}`,
+          {
+            name: newName,
+            done: done,
+          }
+        )
+        setName(newName)
+        setLoading(false)
+      }
+    } catch (err) {
+      alertMessege(err.response.data.message, 'error')
+      setLoading(false)
     }
   }
 
-  const handleEditStatus = () => {
-    if(item.status === 'done'){
-      handleEditItem('status', 'undone', item.id)
+  const handleChangeStatus = async (newDone) => {
+    try {
+      setLoading(true)
+      await axios.patch(
+        `https://todo-api-learning.herokuapp.com/v1/task/6/${item.uuid}`,
+        {
+          name: name,
+          done: newDone,
+        }
+      )
+      setDone(newDone)
+      getItems()
+      setLoading(false)
+    } catch (err) {
+      alertMessege(err.response.data.message, 'error')
+      setLoading(false)
     }
-    else{
-      handleEditItem('status', 'done', item.id)
-    }    
+  }
+
+  const alertMessege = (text, type) => {    
+    notification.open({
+      description: text,
+      type: type,
+    })    
   }
 
   return (
-    <Row 
-    justify='center' 
-    className='item' 
-    gutter={[20, 0]}
-    align='middle'
-    style={{padding: 20}}
-    >
-      <Col span={3} className='item-data'>
-        <Checkbox
-          checked={item.status === 'done' ? true : false}
-          onChange={handleEditStatus}
-        ></Checkbox>
-      </Col>
-      <Col span={14} className='item-data'>
-        <Typography.Text
-          className="item-name"
-          ellipsis={true}
-          editable={{onChange: handleEditName}}
-        >
-          {name}
-        </Typography.Text>
-      </Col>
-      <Col span={5}>
-        {item.createdAt.time + ' ' + item.createdAt.date}
-      </Col>
-      <Col span={2}>
-        <Button
-          danger={true}
-          type='primary'
-          icon={<DeleteOutlined />}
-          onClick={() => handleDeleteItem(item.id)}
-        >
-        </Button>
-      </Col>
-    </Row>
-  );
+    <Spin spinning={loading}>
+      <Row
+        justify="center"
+        className="item"
+        gutter={[20, 0]}
+        align="middle"
+        style={{ padding: 20, marginTop: 10 }}
+      >
+        <Col span={3} className="item-data">
+          <Checkbox
+            checked={done ? true : false}
+            onChange={() => handleChangeStatus(!done)}
+          ></Checkbox>
+        </Col>
+        <Col span={14} className="item-data">
+          <Typography.Text
+            className="item-name"
+            ellipsis={true}
+            editable={{ onChange: handleEditName }}
+          >
+            {name}
+          </Typography.Text>
+        </Col>
+        <Col span={5}>{timeObj.time + " " + timeObj.date}</Col>
+        <Col span={2}>
+          <Button
+            danger={true}
+            type="primary"
+            icon={<DeleteOutlined />}
+            onClick={() => {
+              handleDeleteItem(item.uuid)
+            }}
+          ></Button>
+        </Col>
+      </Row>
+    </Spin>
+  )
 }
- 
-export default Item;
+
+export default Item
