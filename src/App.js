@@ -75,12 +75,15 @@ function App() {
 
   const handleDeleteItem = async (id) => {
     try {
+      setLoading(true)
       await axios.delete(
         `https://todo-api-learning.herokuapp.com/v1/task/6/${id}`
       )
       getItems()
+      setLoading(false)
     } catch (err) {
       alertMessege(err.response.data.message, "error")
+      setLoading(false)
     }
   }
 
@@ -89,13 +92,11 @@ function App() {
     setPageSize(pagesize)
   }
 
-  const alertMessege = (text, type) => {
-    {
-      notification.open({
-        description: text,
-        type: type,
-      })
-    }
+  const alertMessege = (text, type) => {    
+    notification.open({
+      description: text,
+      type: type,
+    })    
   }
 
   return (

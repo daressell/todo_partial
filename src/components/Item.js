@@ -1,4 +1,4 @@
-import { Col, Row, Checkbox, Button, Typography, Spin } from "antd"
+import { Col, Row, Checkbox, Button, Typography, Spin, notification } from "antd"
 import { DeleteOutlined } from "@ant-design/icons"
 import { useState } from "react"
 import axios from "axios"
@@ -50,7 +50,10 @@ const Item = ({ item, handleDeleteItem, getItems }) => {
         setName(newName)
         setLoading(false)
       }
-    } catch (err) {}
+    } catch (err) {
+      alertMessege(err.response.data.message, 'error')
+      setLoading(false)
+    }
   }
 
   const handleChangeStatus = async (newDone) => {
@@ -66,7 +69,17 @@ const Item = ({ item, handleDeleteItem, getItems }) => {
       setDone(newDone)
       getItems()
       setLoading(false)
-    } catch (err) {}
+    } catch (err) {
+      alertMessege(err.response.data.message, 'error')
+      setLoading(false)
+    }
+  }
+
+  const alertMessege = (text, type) => {    
+    notification.open({
+      description: text,
+      type: type,
+    })    
   }
 
   return (
@@ -101,7 +114,6 @@ const Item = ({ item, handleDeleteItem, getItems }) => {
             icon={<DeleteOutlined />}
             onClick={() => {
               handleDeleteItem(item.uuid)
-              setLoading(true)
             }}
           ></Button>
         </Col>
