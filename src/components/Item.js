@@ -1,4 +1,12 @@
-import { Col, Row, Checkbox, Button, Typography, Spin, notification } from "antd"
+import {
+  Col,
+  Row,
+  Checkbox,
+  Button,
+  Typography,
+  Spin,
+  notification,
+} from "antd"
 import { DeleteOutlined } from "@ant-design/icons"
 import { useState } from "react"
 import axios from "axios"
@@ -51,7 +59,7 @@ const Item = ({ item, handleDeleteItem, getItems }) => {
         setLoading(false)
       }
     } catch (err) {
-      alertMessege(err.response.data.message, 'error')
+      alertMessege(err.response.data.message, "error")
       setLoading(false)
     }
   }
@@ -70,16 +78,16 @@ const Item = ({ item, handleDeleteItem, getItems }) => {
       getItems()
       setLoading(false)
     } catch (err) {
-      alertMessege(err.response.data.message, 'error')
+      alertMessege(err.response.data.message, "error")
       setLoading(false)
     }
   }
 
-  const alertMessege = (text, type) => {    
+  const alertMessege = (text, type) => {
     notification.open({
       description: text,
       type: type,
-    })    
+    })
   }
 
   return (
