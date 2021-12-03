@@ -17,10 +17,6 @@ export const AddItem = ({ handleAddItem }) => {
   }
 
   return (
-    <Input
-      value={itemName}
-      onChange={changeText}
-      onPressEnter={handlePressEnter}
-    ></Input>
+    <Input value={itemName} onChange={changeText} onPressEnter={handlePressEnter}></Input>
   )
 }

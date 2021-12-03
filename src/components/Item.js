@@ -1,19 +1,11 @@
-import {
-  Col,
-  Row,
-  Checkbox,
-  Button,
-  Typography,
-  Spin,
-  notification,
-} from "antd"
+import { Col, Row, Checkbox, Button, Typography, Spin, notification } from "antd"
 import { DeleteOutlined } from "@ant-design/icons"
 import { useState } from "react"
 import axios from "axios"
 
 const Item = ({ item, handleDeleteItem, getItems }) => {
   const [name, setName] = useState(item.name)
-  const [done, setDone] = useState(item.done)
+  const [done, setDone] = useState(item.status)
   const [loading, setLoading] = useState(false)
   const months = [
     "January",
@@ -48,13 +40,9 @@ const Item = ({ item, handleDeleteItem, getItems }) => {
       setLoading(true)
       const reg = /[\wа-яА-Я]/
       if (newName.match(reg)) {
-        await axios.patch(
-          `https://todo-api-learning.herokuapp.com/v1/task/6/${item.uuid}`,
-          {
-            name: newName,
-            done: done,
-          }
-        )
+        await axios.patch(`https://back-basic-heroku.herokuapp.com/item/${item.uuid}`, {
+          name: newName,
+        })
         setName(newName)
         setLoading(false)
       }
@@ -67,13 +55,9 @@ const Item = ({ item, handleDeleteItem, getItems }) => {
   const handleChangeStatus = async (newDone) => {
     try {
       setLoading(true)
-      await axios.patch(
-        `https://todo-api-learning.herokuapp.com/v1/task/6/${item.uuid}`,
-        {
-          name: name,
-          done: newDone,
-        }
-      )
+      await axios.patch(`https://back-basic-heroku.herokuapp.com/item/${item.uuid}`, {
+        status: newDone,
+      })
       setDone(newDone)
       getItems()
       setLoading(false)
