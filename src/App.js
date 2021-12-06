@@ -72,7 +72,9 @@ function App() {
     try {
       setLoading(true)
       await axios.delete(`${link_post}/${id}`)
-      getItems()
+      itemsOnPage.length === 1 && countOfItems > 1
+        ? setActivePage(activePage - 1)
+        : await getItems()
       setLoading(false)
     } catch (err) {
       alertMessege(err.response.data.message, "error")
