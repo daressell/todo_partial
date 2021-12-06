@@ -3,6 +3,8 @@ import { DeleteOutlined } from "@ant-design/icons"
 import { useState } from "react"
 import axios from "axios"
 
+const link = "http://localhost:3000/item"
+
 const Item = ({ item, handleDeleteItem, getItems }) => {
   const [name, setName] = useState(item.name)
   const [done, setDone] = useState(item.status)
@@ -40,7 +42,7 @@ const Item = ({ item, handleDeleteItem, getItems }) => {
       setLoading(true)
       const reg = /[\wа-яА-Я]/
       if (newName.match(reg)) {
-        await axios.patch(`https://back-basic-heroku.herokuapp.com/item/${item.uuid}`, {
+        await axios.patch(`${link}/${item.uuid}`, {
           name: newName,
         })
         setName(newName)
@@ -55,7 +57,7 @@ const Item = ({ item, handleDeleteItem, getItems }) => {
   const handleChangeStatus = async (newDone) => {
     try {
       setLoading(true)
-      await axios.patch(`https://back-basic-heroku.herokuapp.com/item/${item.uuid}`, {
+      await axios.patch(`${link}/${item.uuid}`, {
         status: newDone,
       })
       setDone(newDone)

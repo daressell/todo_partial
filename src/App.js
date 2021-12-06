@@ -5,6 +5,9 @@ import { SortFilterPanel } from "./components/SortFilterPanel"
 import { Pagination, Row, Col, Spin, notification } from "antd"
 import axios from "axios"
 
+const link_get = "http://localhost:3000/items"
+const link_post = "http://localhost:3000/item"
+
 function App() {
   const [filter, setFilter] = useState("")
   const [sort, setSort] = useState("desc")
@@ -16,11 +19,9 @@ function App() {
 
   const getItems = async () => {
     try {
-      const link = `https://back-basic-heroku.herokuapp.com/items?${
-        filter && `filterBy=${filter}`
-      }&${sort && `sortBy=${sort}`}&${activePage && `page=${activePage}`}&${
-        pageSize && `pageSize=${pageSize}`
-      }
+      const link = `${link_get}?${filter && `filterBy=${filter}`}&${
+        sort && `sortBy=${sort}`
+      }&${activePage && `page=${activePage}`}&${pageSize && `pageSize=${pageSize}`}
         `
       const res = await axios.get(link)
       const showItems = res.data.items
@@ -48,18 +49,13 @@ function App() {
       }
       setLoading(true)
       const newItem = { name, done: false }
-      const qwe = await axios.post(
-        `https://back-basic-heroku.herokuapp.com/item`,
-        newItem
-      )
-      console.log(qwe)
+      await axios.post(`${link_post}`, newItem)
       getItems()
       setFilter("")
       setSort("desc")
       setActivePage(1)
       setLoading(false)
     } catch (err) {
-      console.log(err.response)
       alertMessege(err.response.data.message, "error")
       setLoading(false)
     }
@@ -78,7 +74,7 @@ function App() {
   const handleDeleteItem = async (id) => {
     try {
       setLoading(true)
-      await axios.delete(`https://back-basic-heroku.herokuapp.com/item/${id}`)
+      await axios.delete(`${link_post}/${id}`)
       getItems()
       setLoading(false)
     } catch (err) {
