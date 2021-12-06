@@ -1,4 +1,4 @@
-import { Row, Button, Col, Typography } from "antd"
+import { Row, Button, Col } from "antd"
 
 export const SortFilterPanel = ({ filter, sort, handleFilter, handleSort }) => {
   return (
@@ -27,8 +27,6 @@ export const SortFilterPanel = ({ filter, sort, handleFilter, handleSort }) => {
       </Col>
       <Col span={12}>
         <Row justify="end">
-          <Typography.Text>Sort by date</Typography.Text>
-
           <Button
             type={sort === "asc" ? "primary" : "default"}
             onClick={() => handleSort("asc")}

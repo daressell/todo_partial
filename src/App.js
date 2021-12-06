@@ -43,10 +43,7 @@ function App() {
 
   const handleAddItem = async (name) => {
     try {
-      const reg = /[\wа-яА-Я]/
-      if (!name.match(reg)) {
-        return 0
-      }
+      name = name.trim()
       setLoading(true)
       const newItem = { name, done: false }
       await axios.post(`${link_post}`, newItem)
