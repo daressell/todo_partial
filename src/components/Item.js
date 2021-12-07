@@ -26,13 +26,13 @@ const Item = ({ item, handleDeleteItem, getItems }) => {
     }
   }
 
-  const handleChangeStatus = async (newDone) => {
+  const handleChangeStatus = async (newStatus) => {
     try {
       setLoading(true)
       await axios.patch(`${link}/${item.uuid}`, {
-        status: newDone,
+        status: newStatus,
       })
-      setDone(newDone)
+      setDone(newStatus)
       getItems()
       setLoading(false)
     } catch (err) {
