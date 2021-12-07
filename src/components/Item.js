@@ -14,7 +14,7 @@ const Item = ({ item, handleDeleteItem, getItems }) => {
   const handleEditName = async (newName) => {
     try {
       setLoading(true)
-      newName = name.trim()
+      newName = newName.trim().replace(/\s+/g, " ")
       await axios.patch(`${link}/${item.uuid}`, {
         name: newName,
       })
