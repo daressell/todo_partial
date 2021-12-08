@@ -5,8 +5,8 @@ import { SortFilterPanel } from "./components/SortFilterPanel"
 import { Pagination, Row, Col, Spin, notification } from "antd"
 import axios from "axios"
 
-const link_get = "http://localhost:3000/items"
-const link_post = "http://localhost:3000/item"
+const link_get = "https://postgres-heroku-application.herokuapp.com/todos"
+const link_post = "https://postgres-heroku-application.herokuapp.com/todo"
 
 function App() {
   const [filter, setFilter] = useState("")
@@ -33,6 +33,7 @@ function App() {
         setCountOfItems(0)
       }
     } catch (err) {
+      console.log(err, "\n\n\n")
       alertMessege(err.response.data.message, "error")
     }
   }

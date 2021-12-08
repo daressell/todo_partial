@@ -4,7 +4,7 @@ import { useState } from "react"
 import axios from "axios"
 import moment from "moment"
 
-const link = "http://localhost:3000/item"
+const link = "https://postgres-heroku-application.herokuapp.com/todo"
 
 const Item = ({ item, handleDeleteItem, getItems }) => {
   const [name, setName] = useState(item.name)
