@@ -1,5 +1,5 @@
-import Item from "./Item"
-import { Col } from "antd"
+import Item from "./Item";
+import { Col } from "antd";
 
 export const List = ({ items, handleDeleteItem, handleEditItem, getItems }) => {
   return (
@@ -14,8 +14,8 @@ export const List = ({ items, handleDeleteItem, handleEditItem, getItems }) => {
               getItems={getItems}
             />
           </div>
-        )
+        );
       })}
     </Col>
-  )
-}
+  );
+};

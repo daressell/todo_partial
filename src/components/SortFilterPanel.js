@@ -1,4 +1,4 @@
-import { Row, Button, Col } from "antd"
+import { Row, Button, Col } from "antd";
 
 export const SortFilterPanel = ({ filter, sort, handleFilter, handleSort }) => {
   return (
@@ -42,5 +42,5 @@ export const SortFilterPanel = ({ filter, sort, handleFilter, handleSort }) => {
         </Row>
       </Col>
     </Row>
-  )
-}
+  );
+};

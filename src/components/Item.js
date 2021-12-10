@@ -1,52 +1,78 @@
-import { Col, Row, Checkbox, Button, Typography, Spin, notification } from "antd"
-import { DeleteOutlined } from "@ant-design/icons"
-import { useState } from "react"
-import axios from "axios"
-import moment from "moment"
+import { Col, Row, Checkbox, Button, Typography, Spin, notification } from "antd";
+import { DeleteOutlined } from "@ant-design/icons";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import moment from "moment";
 
-const link = "https://postgres-heroku-application.herokuapp.com/todo"
+const link = "http://localhost:5000/todo";
 
 const Item = ({ item, handleDeleteItem, getItems }) => {
-  const [name, setName] = useState(item.name)
-  const [done, setDone] = useState(item.status)
-  const [loading, setLoading] = useState(false)
+  const [name, setName] = useState(item.name);
+  const [done, setDone] = useState(item.status);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleEditName = async (newName) => {
     try {
-      setLoading(true)
-      newName = newName.trim().replace(/\s+/g, " ")
-      await axios.patch(`${link}/${item.uuid}`, {
-        name: newName,
-      })
-      setName(newName)
-      setLoading(false)
+      setLoading(true);
+      newName = newName.trim().replace(/\s+/g, " ");
+      const accessToken = localStorage.getItem("accessToken");
+      await axios.patch(
+        `${link}/${item.uuid}`,
+        {
+          name: newName,
+        },
+        {
+          headers: {
+            Authorization: accessToken,
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setName(newName);
+      setLoading(false);
     } catch (err) {
-      alertMessege(err.response.data.message, "error")
-      setLoading(false)
+      if (err.response.data.includes("jwt malformed")) return navigate("/login");
+      alertMessege(err.response.data.message, "error");
+      setLoading(false);
     }
-  }
+  };
 
   const handleChangeStatus = async (newStatus) => {
     try {
-      setLoading(true)
-      await axios.patch(`${link}/${item.uuid}`, {
-        status: newStatus,
-      })
-      setDone(newStatus)
-      getItems()
-      setLoading(false)
+      setLoading(true);
+      const accessToken = localStorage.getItem("accessToken");
+      await axios.patch(
+        `${link}/${item.uuid}`,
+        {
+          status: newStatus,
+        },
+        {
+          headers: {
+            Authorization: accessToken,
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setDone(newStatus);
+      getItems();
+      setLoading(false);
     } catch (err) {
-      alertMessege(err.response.data.message, "error")
-      setLoading(false)
+      if (err.response.data.includes("jwt malformed")) return navigate("/login");
+      alertMessege(err.response.data.message, "error");
+      setLoading(false);
     }
-  }
+  };
 
   const alertMessege = (text, type) => {
     notification.open({
       description: text,
       type: type,
-    })
-  }
+    });
+  };
 
   return (
     <Spin spinning={loading}>
@@ -79,13 +105,13 @@ const Item = ({ item, handleDeleteItem, getItems }) => {
             type="primary"
             icon={<DeleteOutlined />}
             onClick={() => {
-              handleDeleteItem(item.uuid)
+              handleDeleteItem(item.uuid);
             }}
           ></Button>
         </Col>
       </Row>
     </Spin>
-  )
-}
+  );
+};
 
-export default Item
+export default Item;

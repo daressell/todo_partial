@@ -1,140 +1,54 @@
-import { useEffect, useState } from "react"
-import { AddItem } from "./components/AddItem"
-import { List } from "./components/List"
-import { SortFilterPanel } from "./components/SortFilterPanel"
-import { Pagination, Row, Col, Spin, notification } from "antd"
-import axios from "axios"
-
-const link_get = "https://postgres-heroku-application.herokuapp.com/todos"
-const link_post = "https://postgres-heroku-application.herokuapp.com/todo"
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { MainContent } from "./components/MainContent";
+import { Menu, Row, Col } from "antd";
+import { Registration } from "./components/authorize/Registration";
+import { Login } from "./components/authorize/Login";
 
 function App() {
-  const [filter, setFilter] = useState("")
-  const [sort, setSort] = useState("desc")
-  const [activePage, setActivePage] = useState(1)
-  const [itemsOnPage, setItemsOnPage] = useState([])
-  const [countOfItems, setCountOfItems] = useState(0)
-  const [pageSize, setPageSize] = useState(5)
-  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate();
 
-  const getItems = async () => {
-    try {
-      const link = `${link_get}?${filter && `filterBy=${filter}`}&${
-        sort && `sortBy=${sort}`
-      }&${activePage && `page=${activePage}`}&${pageSize && `pageSize=${pageSize}`}
-        `
-      const res = await axios.get(link)
-      const showItems = res.data.items
-      setItemsOnPage(showItems)
-      if (res.data.countOfItems !== 0) {
-        setCountOfItems(res.data.countOfItems)
-      } else {
-        alertMessege(`${filter} items is empty`, "info")
-        setCountOfItems(0)
-      }
-    } catch (err) {
-      console.log(err, "\n\n\n")
-      alertMessege(err.response.data.message, "error")
+  const handleClickMenu = ({ key }) => {
+    if (key === "logout") {
+      localStorage.removeItem("accessToken");
+      navigate("/login");
     }
-  }
-
-  useEffect(() => {
-    getItems()
-  }, [sort, filter, activePage, pageSize])
-
-  const handleAddItem = async (name) => {
-    try {
-      name = name.trim()
-      setLoading(true)
-      const newItem = { name, done: false }
-      await axios.post(`${link_post}`, newItem)
-      getItems()
-      setFilter("")
-      setSort("desc")
-      setActivePage(1)
-      setLoading(false)
-    } catch (err) {
-      alertMessege(err.response.data.message, "error")
-      setLoading(false)
-    }
-  }
-
-  const handleFilteredItems = (typeFilter = "all") => {
-    setFilter(typeFilter)
-    setActivePage(1)
-  }
-
-  const handleSort = (sortType = "new") => {
-    setSort(sortType)
-    setActivePage(1)
-  }
-
-  const handleDeleteItem = async (id) => {
-    try {
-      setLoading(true)
-      await axios.delete(`${link_post}/${id}`)
-      itemsOnPage.length === 1 && countOfItems > 1
-        ? setActivePage(activePage - 1)
-        : await getItems()
-      setLoading(false)
-    } catch (err) {
-      alertMessege(err.response.data.message, "error")
-      setLoading(false)
-    }
-  }
-
-  const handlePagination = (number, pagesize) => {
-    setActivePage(number)
-    setPageSize(pagesize)
-  }
-
-  const alertMessege = (text, type) => {
-    notification.open({
-      description: text,
-      type: type,
-    })
-  }
+  };
 
   return (
-    <Row justify="center">
-      <Col xxl={12} xl={13} lg={16} md={20} sm={22} xs={23}>
-        <Row justify="center">
-          <h2>ToDo</h2>
-        </Row>
-        <Row justify="center">
-          <AddItem handleAddItem={handleAddItem} />
-        </Row>
-        <SortFilterPanel
-          filter={filter}
-          sort={sort}
-          handleFilter={handleFilteredItems}
-          handleSort={handleSort}
-        />
-        <Spin spinning={loading}>
-          <Row justify="center">
-            <List
-              pageSize={pageSize}
-              items={itemsOnPage}
-              handleDeleteItem={handleDeleteItem}
-              getItems={getItems}
+    <>
+      <Menu
+        onClick={handleClickMenu}
+        selectedKeys={[]}
+        mode="horizontal"
+        theme="dark"
+        style={{ display: "flex", justifyContent: "end" }}
+      >
+        {localStorage.getItem("accessToken") && (
+          <Menu.Item key="logout" danger={true}>
+            Выйти
+          </Menu.Item>
+        )}
+      </Menu>
+      <Row type="flex" justify="center" align="middle" style={{ minHeight: "80vh" }}>
+        <Col xxl={12} xl={13} lg={16} md={20} sm={22} xs={23}>
+          <Routes>
+            <Route
+              path="/login"
+              element={<Login />}
+              render={() => localStorage.removeItem("accessToken")}
             />
-          </Row>
-          <Row justify="center">
-            <Pagination
-              style={{ marginBottom: "50px", marginTop: 50 }}
-              onChange={handlePagination}
-              total={countOfItems}
-              defaultCurrent={0}
-              current={activePage}
-              defaultPageSize={pageSize}
-              pageSize={pageSize}
-              pageSizeOptions={[5, 10, 15, 20]}
-              hideOnSinglePage={true}
+            <Route
+              path="/registration"
+              element={<Registration />}
+              render={() => localStorage.removeItem("accessToken")}
             />
-          </Row>
-        </Spin>
-      </Col>
-    </Row>
-  )
+            <Route path="/todos" element={<MainContent />} />
+            <Route path="*" element={<Navigate replace to="/todos" />} />
+          </Routes>
+        </Col>
+      </Row>
+    </>
+  );
 }
-export default App
+
+export default App;
