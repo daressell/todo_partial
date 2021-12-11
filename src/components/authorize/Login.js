@@ -4,8 +4,9 @@ import { Link, useNavigate } from "react-router-dom";
 
 const link_login = "http://localhost:5000/login";
 
-export const Login = (handleError) => {
+export const Login = ({ handleError }) => {
   const navigate = useNavigate();
+  localStorage.removeItem("accessToken");
 
   const onFinish = async (values) => {
     try {
@@ -21,7 +22,7 @@ export const Login = (handleError) => {
       localStorage.setItem("accessToken", result.data.token);
       navigate("/todos");
     } catch (err) {
-      handleError(err.response.data);
+      handleError(err);
     }
   };
 

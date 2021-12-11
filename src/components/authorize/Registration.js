@@ -4,7 +4,7 @@ import axios from "axios";
 
 const link_registration = "http://localhost:5000/registration";
 
-export const Registration = (handleError) => {
+export const Registration = ({ handleError }) => {
   const navigate = useNavigate();
   localStorage.removeItem("accessToken");
 
@@ -15,7 +15,7 @@ export const Registration = (handleError) => {
       localStorage.setItem("accessToken", result.data.token);
       navigate("/login");
     } catch (err) {
-      handleError(err.response.data);
+      handleError(err);
     }
   };
 

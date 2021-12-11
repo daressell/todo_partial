@@ -8,7 +8,7 @@ import axios from "axios";
 const link_get = "http://localhost:5000/todos";
 const link_post = "http://localhost:5000/todo";
 
-export const MainContent = ({ handleError, alertMessege }) => {
+export const MainContent = ({ handleError, alertMessage }) => {
   const [filter, setFilter] = useState("");
   const [sort, setSort] = useState("desc");
   const [activePage, setActivePage] = useState(1);
@@ -37,11 +37,11 @@ export const MainContent = ({ handleError, alertMessege }) => {
       if (res.data.countOfTodos !== 0) {
         setCountOfItems(res.data.countOfTodos);
       } else {
-        alertMessege(`${filter} items is empty`, "info");
+        alertMessage(`${filter} items is empty`, "info");
         setCountOfItems(0);
       }
     } catch (err) {
-      handleError(err.response.data);
+      handleError(err);
     }
   };
 
@@ -68,7 +68,7 @@ export const MainContent = ({ handleError, alertMessege }) => {
       setActivePage(1);
       setLoading(false);
     } catch (err) {
-      handleError(err.response.data.message);
+      handleError(err);
       setLoading(false);
     }
   };
@@ -99,7 +99,7 @@ export const MainContent = ({ handleError, alertMessege }) => {
         : await getItems();
       setLoading(false);
     } catch (err) {
-      handleError(err.response.data.message);
+      handleError(err);
       setLoading(false);
     }
   };

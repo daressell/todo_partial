@@ -32,7 +32,7 @@ const Item = ({ item, handleDeleteItem, getItems, handleError }) => {
       setName(newName);
       setLoading(false);
     } catch (err) {
-      handleError(err.response.data);
+      handleError(err);
       setLoading(false);
     }
   };
@@ -58,7 +58,7 @@ const Item = ({ item, handleDeleteItem, getItems, handleError }) => {
       getItems();
       setLoading(false);
     } catch (err) {
-      handleError(err.response.data);
+      handleError(err);
       setLoading(false);
     }
   };

@@ -15,10 +15,11 @@ function App() {
   };
 
   const handleError = (err) => {
-    alertMessege(err.message, "error");
+    if (err.response.data.includes("jwt")) navigate("/login");
+    alertMessage(err.response.data, "error");
   };
 
-  const alertMessege = (text, type) => {
+  const alertMessage = (text, type) => {
     notification.open({
       description: text,
       type: type,
@@ -43,17 +44,12 @@ function App() {
       <Row type="flex" justify="center" align="middle" style={{ minHeight: "80vh" }}>
         <Col xxl={12} xl={13} lg={16} md={20} sm={22} xs={23}>
           <Routes>
+            <Route path="/login" element={<Login handleError={handleError} />} />
+            <Route path="/registration" element={<Registration handleError={handleError} />} />
             <Route
-              path="/login"
-              element={<Login handleError={handleError} />}
-              render={() => localStorage.removeItem("accessToken")}
+              path="/todos"
+              element={<MainContent handleError={handleError} alertMessage={alertMessage} />}
             />
-            <Route
-              path="/registration"
-              element={<Registration handleError={handleError} />}
-              render={() => localStorage.removeItem("accessToken")}
-            />
-            <Route path="/todos" element={<MainContent handleError={handleError} />} />
             <Route path="*" element={<Navigate replace to="/todos" />} />
           </Routes>
         </Col>
