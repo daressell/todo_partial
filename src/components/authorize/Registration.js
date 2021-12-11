@@ -1,10 +1,10 @@
-import { Button, Form, Input, notification, Row, Space, Typography } from "antd";
+import { Button, Form, Input, Row, Space, Typography } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const link_registration = "http://localhost:5000/registration";
 
-export const Registration = () => {
+export const Registration = (handleError) => {
   const navigate = useNavigate();
   localStorage.removeItem("accessToken");
 
@@ -15,19 +15,12 @@ export const Registration = () => {
       localStorage.setItem("accessToken", result.data.token);
       navigate("/login");
     } catch (err) {
-      alertMessege(err.response.data.message, "error");
+      handleError(err.response.data);
     }
   };
 
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
-  };
-
-  const alertMessege = (text, type) => {
-    notification.open({
-      description: text,
-      type: type,
-    });
   };
 
   return (

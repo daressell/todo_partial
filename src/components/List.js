@@ -1,7 +1,7 @@
 import Item from "./Item";
 import { Col } from "antd";
 
-export const List = ({ items, handleDeleteItem, handleEditItem, getItems }) => {
+export const List = ({ items, handleDeleteItem, handleEditItem, getItems, handleError }) => {
   return (
     <Col span={24} className="items">
       {items.map((item) => {
@@ -12,6 +12,7 @@ export const List = ({ items, handleDeleteItem, handleEditItem, getItems }) => {
               handleDeleteItem={handleDeleteItem}
               handleEditItem={handleEditItem}
               getItems={getItems}
+              handleError={handleError}
             />
           </div>
         );

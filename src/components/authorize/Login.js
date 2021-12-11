@@ -1,10 +1,10 @@
-import { Button, Form, Input, notification, Row, Space, Typography } from "antd";
+import { Button, Form, Input, Row, Space, Typography } from "antd";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 
 const link_login = "http://localhost:5000/login";
 
-export const Login = () => {
+export const Login = (handleError) => {
   const navigate = useNavigate();
 
   const onFinish = async (values) => {
@@ -21,19 +21,12 @@ export const Login = () => {
       localStorage.setItem("accessToken", result.data.token);
       navigate("/todos");
     } catch (err) {
-      alertMessege(err.response.data.message, "error");
+      handleError(err.response.data);
     }
   };
 
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
-  };
-
-  const alertMessege = (text, type) => {
-    notification.open({
-      description: text,
-      type: type,
-    });
   };
 
   return (

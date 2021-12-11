@@ -1,17 +1,15 @@
-import { Col, Row, Checkbox, Button, Typography, Spin, notification } from "antd";
+import { Col, Row, Checkbox, Button, Typography, Spin } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import moment from "moment";
 
 const link = "http://localhost:5000/todo";
 
-const Item = ({ item, handleDeleteItem, getItems }) => {
+const Item = ({ item, handleDeleteItem, getItems, handleError }) => {
   const [name, setName] = useState(item.name);
   const [done, setDone] = useState(item.status);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
   const handleEditName = async (newName) => {
     try {
@@ -34,8 +32,7 @@ const Item = ({ item, handleDeleteItem, getItems }) => {
       setName(newName);
       setLoading(false);
     } catch (err) {
-      if (err.response.data.includes("jwt malformed")) return navigate("/login");
-      alertMessege(err.response.data.message, "error");
+      handleError(err.response.data);
       setLoading(false);
     }
   };
@@ -61,17 +58,9 @@ const Item = ({ item, handleDeleteItem, getItems }) => {
       getItems();
       setLoading(false);
     } catch (err) {
-      if (err.response.data.includes("jwt malformed")) return navigate("/login");
-      alertMessege(err.response.data.message, "error");
+      handleError(err.response.data);
       setLoading(false);
     }
-  };
-
-  const alertMessege = (text, type) => {
-    notification.open({
-      description: text,
-      type: type,
-    });
   };
 
   return (

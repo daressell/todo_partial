@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { MainContent } from "./components/MainContent";
-import { Menu, Row, Col } from "antd";
+import { Menu, Row, Col, notification } from "antd";
 import { Registration } from "./components/authorize/Registration";
 import { Login } from "./components/authorize/Login";
 
@@ -12,6 +12,17 @@ function App() {
       localStorage.removeItem("accessToken");
       navigate("/login");
     }
+  };
+
+  const handleError = (err) => {
+    alertMessege(err.message, "error");
+  };
+
+  const alertMessege = (text, type) => {
+    notification.open({
+      description: text,
+      type: type,
+    });
   };
 
   return (
@@ -34,15 +45,15 @@ function App() {
           <Routes>
             <Route
               path="/login"
-              element={<Login />}
+              element={<Login handleError={handleError} />}
               render={() => localStorage.removeItem("accessToken")}
             />
             <Route
               path="/registration"
-              element={<Registration />}
+              element={<Registration handleError={handleError} />}
               render={() => localStorage.removeItem("accessToken")}
             />
-            <Route path="/todos" element={<MainContent />} />
+            <Route path="/todos" element={<MainContent handleError={handleError} />} />
             <Route path="*" element={<Navigate replace to="/todos" />} />
           </Routes>
         </Col>

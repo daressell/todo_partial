@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { AddItem } from "./AddItem";
 import { List } from "./List";
 import { SortFilterPanel } from "./SortFilterPanel";
-import { Pagination, Row, Spin, notification } from "antd";
+import { Pagination, Row, Spin } from "antd";
 import axios from "axios";
 
 const link_get = "http://localhost:5000/todos";
 const link_post = "http://localhost:5000/todo";
 
-export const MainContent = ({ refreshToken }) => {
+export const MainContent = ({ handleError, alertMessege }) => {
   const [filter, setFilter] = useState("");
   const [sort, setSort] = useState("desc");
   const [activePage, setActivePage] = useState(1);
@@ -17,13 +16,12 @@ export const MainContent = ({ refreshToken }) => {
   const [countOfItems, setCountOfItems] = useState(0);
   const [pageSize, setPageSize] = useState(5);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
   const getItems = async () => {
     try {
-      const link = `${link_get}?${filter && `filterBy=${filter}`}&${
-        sort && `sortBy=${sort}`
-      }&${activePage && `page=${activePage}`}&${pageSize && `pageSize=${pageSize}`}
+      const link = `${link_get}?${filter && `filterBy=${filter}`}&${sort && `sortBy=${sort}`}&${
+        activePage && `page=${activePage}`
+      }&${pageSize && `pageSize=${pageSize}`}
         `;
       const accessToken = localStorage.getItem("accessToken");
       const res = await axios.get(link, {
@@ -43,8 +41,7 @@ export const MainContent = ({ refreshToken }) => {
         setCountOfItems(0);
       }
     } catch (err) {
-      if (err.response.data.includes("jwt malformed")) return navigate("/login"); //// redirect to login if not authorized
-      alertMessege(err.response.data.message, "error");
+      handleError(err.response.data);
     }
   };
 
@@ -71,8 +68,7 @@ export const MainContent = ({ refreshToken }) => {
       setActivePage(1);
       setLoading(false);
     } catch (err) {
-      // if (err.response.data.includes("jwt malformed")) return navigate("/login")
-      alertMessege(err.response.data.message, "error");
+      handleError(err.response.data.message);
       setLoading(false);
     }
   };
@@ -103,8 +99,7 @@ export const MainContent = ({ refreshToken }) => {
         : await getItems();
       setLoading(false);
     } catch (err) {
-      if (err.response.data.includes("jwt malformed")) return navigate("/login");
-      alertMessege(err.response.data.message, "error");
+      handleError(err.response.data.message);
       setLoading(false);
     }
   };
@@ -114,50 +109,48 @@ export const MainContent = ({ refreshToken }) => {
     setPageSize(pagesize);
   };
 
-  const alertMessege = (text, type) => {
-    notification.open({
-      description: text,
-      type: type,
-    });
-  };
-
   return (
     <>
-      <Row justify="center">
-        <h2>ToDo</h2>
-      </Row>
-      <Row justify="center">
-        <AddItem handleAddItem={handleAddItem} />
-      </Row>
-      <SortFilterPanel
-        filter={filter}
-        sort={sort}
-        handleFilter={handleFilteredItems}
-        handleSort={handleSort}
-      />
-      <Spin spinning={loading}>
-        <Row justify="center">
-          <List
-            pageSize={pageSize}
-            items={itemsOnPage}
-            handleDeleteItem={handleDeleteItem}
-            getItems={getItems}
+      {localStorage.getItem("accessToken") && (
+        <>
+          <Row justify="center">
+            <h2>ToDo</h2>
+          </Row>
+          <Row justify="center">
+            <AddItem handleAddItem={handleAddItem} />
+          </Row>
+          <SortFilterPanel
+            filter={filter}
+            sort={sort}
+            handleFilter={handleFilteredItems}
+            handleSort={handleSort}
           />
-        </Row>
-        <Row justify="center">
-          <Pagination
-            style={{ marginBottom: "50px", marginTop: 50 }}
-            onChange={handlePagination}
-            total={countOfItems}
-            defaultCurrent={0}
-            current={activePage}
-            defaultPageSize={pageSize}
-            pageSize={pageSize}
-            pageSizeOptions={[5, 10, 15, 20]}
-            hideOnSinglePage={true}
-          />
-        </Row>
-      </Spin>
+          <Spin spinning={loading}>
+            <Row justify="center">
+              <List
+                pageSize={pageSize}
+                items={itemsOnPage}
+                handleDeleteItem={handleDeleteItem}
+                getItems={getItems}
+                handleError={handleError}
+              />
+            </Row>
+            <Row justify="center">
+              <Pagination
+                style={{ marginBottom: "50px", marginTop: 50 }}
+                onChange={handlePagination}
+                total={countOfItems}
+                defaultCurrent={0}
+                current={activePage}
+                defaultPageSize={pageSize}
+                pageSize={pageSize}
+                pageSizeOptions={[5, 10, 15, 20]}
+                hideOnSinglePage={true}
+              />
+            </Row>
+          </Spin>
+        </>
+      )}
     </>
   );
 };
