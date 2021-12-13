@@ -6,7 +6,7 @@ import moment from "moment";
 
 const link = "http://localhost:5000/todo";
 
-const Item = ({ item, handleDeleteItem, getItems, handleError }) => {
+const Item = ({ item, handleDeleteItem, getItems, handleError, token }) => {
   const [name, setName] = useState(item.name);
   const [done, setDone] = useState(item.status);
   const [loading, setLoading] = useState(false);
@@ -15,7 +15,9 @@ const Item = ({ item, handleDeleteItem, getItems, handleError }) => {
     try {
       setLoading(true);
       newName = newName.trim().replace(/\s+/g, " ");
-      const accessToken = localStorage.getItem("accessToken");
+      if (!newName) throw new Error("Bad name");
+      if (newName.length < 2 || newName.length > 100)
+        throw new Error("Need more, than 1 symbol and less, than 100");
       await axios.patch(
         `${link}/${item.uuid}`,
         {
@@ -23,7 +25,7 @@ const Item = ({ item, handleDeleteItem, getItems, handleError }) => {
         },
         {
           headers: {
-            Authorization: accessToken,
+            Authorization: token,
             "Access-Control-Allow-Origin": "*",
             "Content-Type": "application/json",
           },
@@ -40,7 +42,6 @@ const Item = ({ item, handleDeleteItem, getItems, handleError }) => {
   const handleChangeStatus = async (newStatus) => {
     try {
       setLoading(true);
-      const accessToken = localStorage.getItem("accessToken");
       await axios.patch(
         `${link}/${item.uuid}`,
         {
@@ -48,7 +49,7 @@ const Item = ({ item, handleDeleteItem, getItems, handleError }) => {
         },
         {
           headers: {
-            Authorization: accessToken,
+            Authorization: token,
             "Access-Control-Allow-Origin": "*",
             "Content-Type": "application/json",
           },

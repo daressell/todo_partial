@@ -4,22 +4,15 @@ import { Link, useNavigate } from "react-router-dom";
 
 const link_login = "http://localhost:5000/login";
 
-export const Login = ({ handleError }) => {
+export const Login = ({ handleError, setToken }) => {
   const navigate = useNavigate();
-  localStorage.removeItem("accessToken");
+  // setToken("");
 
   const onFinish = async (values) => {
     try {
-      const newUser = values;
-      const accessToken = localStorage.getItem("accessToken");
-      const result = await axios.post(link_login, newUser, {
-        headers: {
-          Authorization: accessToken,
-          "Access-Control-Allow-Origin": "*",
-          "Content-Type": "application/json",
-        },
-      });
-      localStorage.setItem("accessToken", result.data.token);
+      const user = values;
+      const result = await axios.post(link_login, user);
+      setToken(result.data.token);
       navigate("/todos");
     } catch (err) {
       handleError(err);

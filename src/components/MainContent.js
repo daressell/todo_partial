@@ -8,7 +8,7 @@ import axios from "axios";
 const link_get = "http://localhost:5000/todos";
 const link_post = "http://localhost:5000/todo";
 
-export const MainContent = ({ handleError, alertMessage }) => {
+export const MainContent = ({ handleError, alertMessage, token }) => {
   const [filter, setFilter] = useState("");
   const [sort, setSort] = useState("desc");
   const [activePage, setActivePage] = useState(1);
@@ -19,14 +19,13 @@ export const MainContent = ({ handleError, alertMessage }) => {
 
   const getItems = async () => {
     try {
-      const link = `${link_get}?${filter && `filterBy=${filter}`}&${sort && `sortBy=${sort}`}&${
-        activePage && `page=${activePage}`
-      }&${pageSize && `pageSize=${pageSize}`}
+      const link = `${link_get}?${filter && `filterBy=${filter}`}&${
+        sort && `sortBy=${sort}`
+      }&${activePage && `page=${activePage}`}&${pageSize && `pageSize=${pageSize}`}
         `;
-      const accessToken = localStorage.getItem("accessToken");
       const res = await axios.get(link, {
         headers: {
-          Authorization: accessToken,
+          Authorization: token,
           "Access-Control-Allow-Origin": "*",
           "Content-Type": "application/json",
         },
@@ -51,13 +50,14 @@ export const MainContent = ({ handleError, alertMessage }) => {
 
   const handleAddItem = async (name) => {
     try {
-      name = name.trim();
+      name = name.trim().replace(/\s+/g, " ");
+      if (!name) throw new Error("Bad name");
+      if (name.length < 2) throw new Error("Need more, than 1 symbol");
       setLoading(true);
       const newItem = { name, done: false };
-      const accessToken = localStorage.getItem("accessToken");
       await axios.post(`${link_post}`, newItem, {
         headers: {
-          Authorization: accessToken,
+          Authorization: token,
           "Access-Control-Allow-Origin": "*",
           "Content-Type": "application/json",
         },
@@ -86,10 +86,9 @@ export const MainContent = ({ handleError, alertMessage }) => {
   const handleDeleteItem = async (id) => {
     try {
       setLoading(true);
-      const accessToken = localStorage.getItem("accessToken");
       await axios.delete(`${link_post}/${id}`, {
         headers: {
-          Authorization: accessToken,
+          Authorization: token,
           "Access-Control-Allow-Origin": "*",
           "Content-Type": "application/json",
         },
@@ -111,7 +110,7 @@ export const MainContent = ({ handleError, alertMessage }) => {
 
   return (
     <>
-      {localStorage.getItem("accessToken") && (
+      {token && (
         <>
           <Row justify="center">
             <h2>ToDo</h2>
@@ -133,6 +132,7 @@ export const MainContent = ({ handleError, alertMessage }) => {
                 handleDeleteItem={handleDeleteItem}
                 getItems={getItems}
                 handleError={handleError}
+                token={token}
               />
             </Row>
             <Row justify="center">

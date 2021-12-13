@@ -4,15 +4,17 @@ import axios from "axios";
 
 const link_registration = "http://localhost:5000/registration";
 
-export const Registration = ({ handleError }) => {
+export const Registration = ({ handleError, alertMessage, setToken }) => {
   const navigate = useNavigate();
-  localStorage.removeItem("accessToken");
+  setToken("");
 
   const onFinish = async (values) => {
     try {
       const newUser = values;
-      const result = await axios.post(link_registration, newUser);
-      localStorage.setItem("accessToken", result.data.token);
+      if (!newUser.login?.match(/^(?=.*[A-Za-z])(?=.*\d)[\w]{8,}$/))
+        throw new Error("bad login");
+      await axios.post(link_registration, newUser);
+      alertMessage("Success registration", "success");
       navigate("/login");
     } catch (err) {
       handleError(err);

@@ -1,7 +1,14 @@
 import Item from "./Item";
 import { Col } from "antd";
 
-export const List = ({ items, handleDeleteItem, handleEditItem, getItems, handleError }) => {
+export const List = ({
+  items,
+  handleDeleteItem,
+  handleEditItem,
+  getItems,
+  handleError,
+  token,
+}) => {
   return (
     <Col span={24} className="items">
       {items.map((item) => {
@@ -13,6 +20,7 @@ export const List = ({ items, handleDeleteItem, handleEditItem, getItems, handle
               handleEditItem={handleEditItem}
               getItems={getItems}
               handleError={handleError}
+              token={token}
             />
           </div>
         );
