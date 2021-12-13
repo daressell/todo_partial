@@ -1,12 +1,16 @@
 import { Button, Form, Input, Row, Space, Typography } from "antd";
 import axios from "axios";
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const link_login = "http://localhost:5000/login";
 
 export const Login = ({ handleError, setToken }) => {
   const navigate = useNavigate();
-  // setToken("");
+
+  useEffect(() => {
+    setToken("");
+  }, []);
 
   const onFinish = async (values) => {
     try {
@@ -20,7 +24,10 @@ export const Login = ({ handleError, setToken }) => {
   };
 
   const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
+    errorInfo.errorFields.forEach((err) => {
+      errorInfo.message = err.errors[0];
+      // handleError(errorInfo);
+    });
   };
 
   return (

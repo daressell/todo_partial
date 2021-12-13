@@ -5,6 +5,15 @@ import { Registration } from "./components/authorize/Registration";
 import { Login } from "./components/authorize/Login";
 import { useState } from "react";
 
+const hostName = "http://localhost:5000";
+
+const links = {
+  getTodos: `${hostName}/todos`,
+  postTodo: `${hostName}/todo`,
+  login: `${hostName}/login`,
+  registration: `${hostName}/registration`,
+};
+
 function App() {
   const navigate = useNavigate();
   const [token, setToken] = useState();
@@ -17,9 +26,11 @@ function App() {
   };
 
   const handleError = (err) => {
-    err.message && alertMessage(err.message, "error");
-    err.response?.data && alertMessage(err.response.data, "error");
-    err.response?.data?.includes("jwt") && navigate("/login");
+    if (err.response?.data) {
+      alertMessage(err.response.data, "error");
+      return err.response?.data?.includes("jwt") && navigate("/login");
+    }
+    if (err.message) return alertMessage(err.message, "error");
   };
 
   const alertMessage = (text, type) => {
@@ -50,12 +61,13 @@ function App() {
           <Routes>
             <Route
               path="/login"
-              element={<Login handleError={handleError} setToken={setToken} />}
+              element={<Login links={links} handleError={handleError} setToken={setToken} />}
             />
             <Route
               path="/registration"
               element={
                 <Registration
+                  links={links}
                   handleError={handleError}
                   alertMessage={alertMessage}
                   setToken={setToken}
@@ -66,6 +78,7 @@ function App() {
               path="/todos"
               element={
                 <MainContent
+                  links={links}
                   handleError={handleError}
                   alertMessage={alertMessage}
                   token={token}

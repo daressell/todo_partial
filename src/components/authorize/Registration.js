@@ -1,18 +1,29 @@
 import { Button, Form, Input, Row, Space, Typography } from "antd";
 import { Link, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import axios from "axios";
 
 const link_registration = "http://localhost:5000/registration";
 
 export const Registration = ({ handleError, alertMessage, setToken }) => {
   const navigate = useNavigate();
-  setToken("");
+
+  useEffect(() => {
+    setToken("");
+  }, []);
 
   const onFinish = async (values) => {
     try {
       const newUser = values;
-      if (!newUser.login?.match(/^(?=.*[A-Za-z])(?=.*\d)[\w]{8,}$/))
-        throw new Error("bad login");
+      if (!newUser.login.match(/^(?=.*[A-Za-z])[\w]{4,100}$/))
+        throw new Error("bad name validation, need 4-100 symbols and use only a-b and numbers");
+
+      if (!newUser.password.match(/^(?=.*[A-Za-z])(?=.*\d)[\w]{8,100}$/))
+        throw new Error("need more difficult password, uisng only a-b and numbers");
+
+      if (newUser.password !== newUser.confirm)
+        throw new Error("confirm and passwor must be equal");
+
       await axios.post(link_registration, newUser);
       alertMessage("Success registration", "success");
       navigate("/login");
@@ -22,7 +33,10 @@ export const Registration = ({ handleError, alertMessage, setToken }) => {
   };
 
   const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
+    errorInfo.errorFields.forEach((err) => {
+      errorInfo.message = err.errors[0];
+      handleError(errorInfo);
+    });
   };
 
   return (

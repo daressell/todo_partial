@@ -4,9 +4,7 @@ import { useState } from "react";
 import axios from "axios";
 import moment from "moment";
 
-const link = "http://localhost:5000/todo";
-
-const Item = ({ item, handleDeleteItem, getItems, handleError, token }) => {
+const Item = ({ links, item, handleDeleteItem, getItems, handleError, token }) => {
   const [name, setName] = useState(item.name);
   const [done, setDone] = useState(item.status);
   const [loading, setLoading] = useState(false);
@@ -15,11 +13,13 @@ const Item = ({ item, handleDeleteItem, getItems, handleError, token }) => {
     try {
       setLoading(true);
       newName = newName.trim().replace(/\s+/g, " ");
-      if (!newName) throw new Error("Bad name");
+
+      if (!newName.match(/[\w]/)) throw new Error("meaningless content");
       if (newName.length < 2 || newName.length > 100)
         throw new Error("Need more, than 1 symbol and less, than 100");
+
       await axios.patch(
-        `${link}/${item.uuid}`,
+        `${links.postTodo}/${item.uuid}`,
         {
           name: newName,
         },
@@ -43,7 +43,7 @@ const Item = ({ item, handleDeleteItem, getItems, handleError, token }) => {
     try {
       setLoading(true);
       await axios.patch(
-        `${link}/${item.uuid}`,
+        `${links.postTodo}/${item.uuid}`,
         {
           status: newStatus,
         },

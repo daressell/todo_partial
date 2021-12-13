@@ -2,6 +2,7 @@ import Item from "./Item";
 import { Col } from "antd";
 
 export const List = ({
+  links,
   items,
   handleDeleteItem,
   handleEditItem,
@@ -15,6 +16,7 @@ export const List = ({
         return (
           <div key={item.uuid} style={{ marginTop: 10, maxHeight: 80 }}>
             <Item
+              links={links}
               item={item}
               handleDeleteItem={handleDeleteItem}
               handleEditItem={handleEditItem}

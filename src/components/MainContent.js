@@ -5,10 +5,7 @@ import { SortFilterPanel } from "./SortFilterPanel";
 import { Pagination, Row, Spin } from "antd";
 import axios from "axios";
 
-const link_get = "http://localhost:5000/todos";
-const link_post = "http://localhost:5000/todo";
-
-export const MainContent = ({ handleError, alertMessage, token }) => {
+export const MainContent = ({ links, handleError, alertMessage, token }) => {
   const [filter, setFilter] = useState("");
   const [sort, setSort] = useState("desc");
   const [activePage, setActivePage] = useState(1);
@@ -19,7 +16,7 @@ export const MainContent = ({ handleError, alertMessage, token }) => {
 
   const getItems = async () => {
     try {
-      const link = `${link_get}?${filter && `filterBy=${filter}`}&${
+      const link = `${links.getTodos}?${filter && `filterBy=${filter}`}&${
         sort && `sortBy=${sort}`
       }&${activePage && `page=${activePage}`}&${pageSize && `pageSize=${pageSize}`}
         `;
@@ -55,7 +52,7 @@ export const MainContent = ({ handleError, alertMessage, token }) => {
       if (name.length < 2) throw new Error("Need more, than 1 symbol");
       setLoading(true);
       const newItem = { name, done: false };
-      await axios.post(`${link_post}`, newItem, {
+      await axios.post(`${links.postTodo}`, newItem, {
         headers: {
           Authorization: token,
           "Access-Control-Allow-Origin": "*",
@@ -86,7 +83,7 @@ export const MainContent = ({ handleError, alertMessage, token }) => {
   const handleDeleteItem = async (id) => {
     try {
       setLoading(true);
-      await axios.delete(`${link_post}/${id}`, {
+      await axios.delete(`${links.postTodo}/${id}`, {
         headers: {
           Authorization: token,
           "Access-Control-Allow-Origin": "*",
@@ -127,6 +124,7 @@ export const MainContent = ({ handleError, alertMessage, token }) => {
           <Spin spinning={loading}>
             <Row justify="center">
               <List
+                links={links}
                 pageSize={pageSize}
                 items={itemsOnPage}
                 handleDeleteItem={handleDeleteItem}
