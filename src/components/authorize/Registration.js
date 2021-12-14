@@ -1,22 +1,22 @@
-import { Button, Form, Input, Row, Space, Typography } from "antd";
+import { Button, Form, Input, Row, Col, Space, Typography } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import axios from "axios";
 
-const link_registration = "http://localhost:5000/registration";
-
-export const Registration = ({ handleError, alertMessage, setToken }) => {
+export const Registration = ({ links, handleError, alertMessage }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setToken("");
+    localStorage.removeItem("accessToken");
   }, []);
 
   const onFinish = async (values) => {
     try {
       const newUser = values;
       if (!newUser.login.match(/^(?=.*[A-Za-z])[\w]{4,100}$/))
-        throw new Error("bad name validation, need 4-100 symbols and use only a-b and numbers");
+        throw new Error(
+          "bad name validation, need 4-100 symbols and use only a-b and numbers"
+        );
 
       if (!newUser.password.match(/^(?=.*[A-Za-z])(?=.*\d)[\w]{8,100}$/))
         throw new Error("need more difficult password, uisng only a-b and numbers");
@@ -24,7 +24,7 @@ export const Registration = ({ handleError, alertMessage, setToken }) => {
       if (newUser.password !== newUser.confirm)
         throw new Error("confirm and passwor must be equal");
 
-      await axios.post(link_registration, newUser);
+      await axios.post(links.registration, newUser);
       alertMessage("Success registration", "success");
       navigate("/login");
     } catch (err) {
@@ -41,90 +41,94 @@ export const Registration = ({ handleError, alertMessage, setToken }) => {
 
   return (
     <>
-      <Row justify="center">
-        <h2>Registration</h2>
+      <Row type="flex" justify="center" align="middle" style={{ minHeight: "80vh" }}>
+        <Col xxl={12} xl={13} lg={16} md={20} sm={22} xs={23}>
+          <Row justify="center">
+            <h2>Registration</h2>
+          </Row>
+          <Form
+            name="basic"
+            labelCol={{
+              span: 5,
+            }}
+            wrapperCol={{
+              span: 16,
+            }}
+            initialValues={{
+              remember: true,
+            }}
+            onFinish={onFinish}
+            onFinishFailed={onFinishFailed}
+            autoComplete="off"
+          >
+            <Form.Item
+              label="Login"
+              name="login"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your login!",
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+
+            <Form.Item
+              label="Password"
+              name="password"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your password!",
+                },
+              ]}
+            >
+              <Input.Password />
+            </Form.Item>
+            <Form.Item
+              name="confirm"
+              label="Confirm Password"
+              dependencies={["password"]}
+              hasFeedback
+              rules={[
+                {
+                  required: true,
+                  message: "Please confirm your password!",
+                },
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    if (!value || getFieldValue("password") === value) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(
+                      new Error("The two passwords that you entered do not match!")
+                    );
+                  },
+                }),
+              ]}
+            >
+              <Input.Password />
+            </Form.Item>
+
+            <Form.Item
+              wrapperCol={{
+                offset: 5,
+                span: 16,
+              }}
+            >
+              <Space>
+                <Button type="primary" htmlType="submit">
+                  Sign up
+                </Button>
+                <Typography.Text>
+                  <Link to="/login">Sign in</Link>
+                </Typography.Text>
+              </Space>
+            </Form.Item>
+          </Form>
+        </Col>
       </Row>
-      <Form
-        name="basic"
-        labelCol={{
-          span: 5,
-        }}
-        wrapperCol={{
-          span: 16,
-        }}
-        initialValues={{
-          remember: true,
-        }}
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-        autoComplete="off"
-      >
-        <Form.Item
-          label="Login"
-          name="login"
-          rules={[
-            {
-              required: true,
-              message: "Please input your login!",
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          label="Password"
-          name="password"
-          rules={[
-            {
-              required: true,
-              message: "Please input your password!",
-            },
-          ]}
-        >
-          <Input.Password />
-        </Form.Item>
-        <Form.Item
-          name="confirm"
-          label="Confirm Password"
-          dependencies={["password"]}
-          hasFeedback
-          rules={[
-            {
-              required: true,
-              message: "Please confirm your password!",
-            },
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (!value || getFieldValue("password") === value) {
-                  return Promise.resolve();
-                }
-                return Promise.reject(
-                  new Error("The two passwords that you entered do not match!")
-                );
-              },
-            }),
-          ]}
-        >
-          <Input.Password />
-        </Form.Item>
-
-        <Form.Item
-          wrapperCol={{
-            offset: 5,
-            span: 16,
-          }}
-        >
-          <Space>
-            <Button type="primary" htmlType="submit">
-              Sign up
-            </Button>
-            <Typography.Text>
-              <Link to="/login">Sign in</Link>
-            </Typography.Text>
-          </Space>
-        </Form.Item>
-      </Form>
     </>
   );
 };

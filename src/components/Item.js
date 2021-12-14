@@ -25,7 +25,8 @@ const Item = ({ links, item, handleDeleteItem, getItems, handleError, token }) =
         },
         {
           headers: {
-            Authorization: token,
+            // Authorization: token,
+            Authorization: localStorage.getItem("accessToken"),
             "Access-Control-Allow-Origin": "*",
             "Content-Type": "application/json",
           },
@@ -49,7 +50,8 @@ const Item = ({ links, item, handleDeleteItem, getItems, handleError, token }) =
         },
         {
           headers: {
-            Authorization: token,
+            // Authorization: token,
+            Authorization: localStorage.getItem("accessToken"),
             "Access-Control-Allow-Origin": "*",
             "Content-Type": "application/json",
           },

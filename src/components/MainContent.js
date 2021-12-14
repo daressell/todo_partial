@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { AddItem } from "./AddItem";
 import { List } from "./List";
 import { SortFilterPanel } from "./SortFilterPanel";
-import { Pagination, Row, Spin } from "antd";
+import { Col, Pagination, Row, Spin, Menu } from "antd";
 import axios from "axios";
 
-export const MainContent = ({ links, handleError, alertMessage, token }) => {
+export const MainContent = ({ links, handleError, alertMessage }) => {
+  const navigate = useNavigate();
   const [filter, setFilter] = useState("");
   const [sort, setSort] = useState("desc");
   const [activePage, setActivePage] = useState(1);
@@ -22,7 +24,7 @@ export const MainContent = ({ links, handleError, alertMessage, token }) => {
         `;
       const res = await axios.get(link, {
         headers: {
-          Authorization: token,
+          Authorization: localStorage.getItem("accessToken"),
           "Access-Control-Allow-Origin": "*",
           "Content-Type": "application/json",
         },
@@ -54,7 +56,7 @@ export const MainContent = ({ links, handleError, alertMessage, token }) => {
       const newItem = { name, done: false };
       await axios.post(`${links.postTodo}`, newItem, {
         headers: {
-          Authorization: token,
+          Authorization: localStorage.getItem("accessToken"),
           "Access-Control-Allow-Origin": "*",
           "Content-Type": "application/json",
         },
@@ -85,7 +87,7 @@ export const MainContent = ({ links, handleError, alertMessage, token }) => {
       setLoading(true);
       await axios.delete(`${links.postTodo}/${id}`, {
         headers: {
-          Authorization: token,
+          Authorization: localStorage.getItem("accessToken"),
           "Access-Control-Allow-Origin": "*",
           "Content-Type": "application/json",
         },
@@ -105,48 +107,69 @@ export const MainContent = ({ links, handleError, alertMessage, token }) => {
     setPageSize(pagesize);
   };
 
+  const handleClickMenu = ({ key }) => {
+    if (key === "logout") {
+      localStorage.removeItem("accessToken");
+      navigate("/login");
+    }
+  };
+
   return (
     <>
-      {token && (
+      {localStorage.getItem("accessToken") && (
         <>
-          <Row justify="center">
-            <h2>ToDo</h2>
-          </Row>
-          <Row justify="center">
-            <AddItem handleAddItem={handleAddItem} />
-          </Row>
-          <SortFilterPanel
-            filter={filter}
-            sort={sort}
-            handleFilter={handleFilteredItems}
-            handleSort={handleSort}
-          />
-          <Spin spinning={loading}>
-            <Row justify="center">
-              <List
-                links={links}
-                pageSize={pageSize}
-                items={itemsOnPage}
-                handleDeleteItem={handleDeleteItem}
-                getItems={getItems}
-                handleError={handleError}
-                token={token}
+          <Menu
+            onClick={handleClickMenu}
+            selectedKeys={[]}
+            mode="horizontal"
+            theme="dark"
+            style={{ display: "flex", justifyContent: "end" }}
+          >
+            <Menu.Item key="logout" danger={true}>
+              Выйти
+            </Menu.Item>
+          </Menu>
+          <Row type="flex" justify="center" align="middle" style={{ minHeight: "80vh" }}>
+            <Col xxl={12} xl={13} lg={16} md={20} sm={22} xs={23}>
+              <Row justify="center">
+                <h2>ToDo</h2>
+              </Row>
+              <Row justify="center">
+                <AddItem handleAddItem={handleAddItem} />
+              </Row>
+              <SortFilterPanel
+                filter={filter}
+                sort={sort}
+                handleFilter={handleFilteredItems}
+                handleSort={handleSort}
               />
-            </Row>
-            <Row justify="center">
-              <Pagination
-                style={{ marginBottom: "50px", marginTop: 50 }}
-                onChange={handlePagination}
-                total={countOfItems}
-                defaultCurrent={0}
-                current={activePage}
-                defaultPageSize={pageSize}
-                pageSize={pageSize}
-                pageSizeOptions={[5, 10, 15, 20]}
-                hideOnSinglePage={true}
-              />
-            </Row>
-          </Spin>
+              <Spin spinning={loading}>
+                <Row justify="center">
+                  <List
+                    links={links}
+                    pageSize={pageSize}
+                    items={itemsOnPage}
+                    handleDeleteItem={handleDeleteItem}
+                    getItems={getItems}
+                    handleError={handleError}
+                  />
+                </Row>
+                <Row justify="center">
+                  <Pagination
+                    style={{ marginBottom: "50px", marginTop: 50 }}
+                    onChange={handlePagination}
+                    total={countOfItems}
+                    defaultCurrent={0}
+                    current={activePage}
+                    defaultPageSize={pageSize}
+                    pageSize={pageSize}
+                    pageSizeOptions={[5, 10, 15, 20]}
+                    hideOnSinglePage={true}
+                  />
+                </Row>
+              </Spin>
+            </Col>
+          </Row>
         </>
       )}
     </>

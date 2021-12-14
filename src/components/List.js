@@ -8,7 +8,7 @@ export const List = ({
   handleEditItem,
   getItems,
   handleError,
-  token,
+  // token,
 }) => {
   return (
     <Col span={24} className="items">
@@ -22,7 +22,7 @@ export const List = ({
               handleEditItem={handleEditItem}
               getItems={getItems}
               handleError={handleError}
-              token={token}
+              // token={token}
             />
           </div>
         );
