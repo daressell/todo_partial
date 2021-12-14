@@ -1,144 +1,67 @@
-import { useEffect, useState } from "react"
-import { AddItem } from "./components/AddItem"
-import { List } from "./components/List"
-import { SortFilterPanel } from "./components/SortFilterPanel"
-import { Pagination, Row, Col, Spin, notification } from "antd"
-import axios from "axios"
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { MainContent } from "./components/MainContent";
+import { notification } from "antd";
+import { Registration } from "./components/authorize/Registration";
+import { Login } from "./components/authorize/Login";
+
+const hostName = "https://postgres-heroku-application.herokuapp.com";
+
+const links = {
+  getTodos: `${hostName}/todos`,
+  postTodo: `${hostName}/todo`,
+  login: `${hostName}/login`,
+  registration: `${hostName}/registration`,
+};
 
 function App() {
-  const [filter, setFilter] = useState("")
-  const [sort, setSort] = useState("desc")
-  const [activePage, setActivePage] = useState(1)
-  const [itemsOnPage, setItemsOnPage] = useState([])
-  const [countOfItems, setCountOfItems] = useState(0)
-  const [pageSize, setPageSize] = useState(5)
-  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate();
 
-  const getItems = async () => {
-    try {
-      const link = `https://back-basic-heroku.herokuapp.com/items?${
-        filter && `filterBy=${filter}`
-      }&${sort && `sortBy=${sort}`}&${activePage && `page=${activePage}`}&${
-        pageSize && `pageSize=${pageSize}`
-      }
-        `
-      const res = await axios.get(link)
-      const showItems = res.data.items
-      setItemsOnPage(showItems)
-      if (res.data.countOfItems !== 0) {
-        setCountOfItems(res.data.countOfItems)
-      } else {
-        alertMessege(`${filter} items is empty`, "info")
-        setCountOfItems(0)
-      }
-    } catch (err) {
-      alertMessege(err.response.data.message, "error")
+  const handleError = (err) => {
+    if (err.response?.data) {
+      alertMessage(err.response.data, "error");
+      return err.response?.data?.includes("jwt") && navigate("/login");
     }
-  }
+    if (err.message) return alertMessage(err.message, "error");
+  };
 
-  useEffect(() => {
-    getItems()
-  }, [sort, filter, activePage, pageSize])
-
-  const handleAddItem = async (name) => {
-    try {
-      const reg = /[\wа-яА-Я]/
-      if (!name.match(reg)) {
-        return 0
-      }
-      setLoading(true)
-      const newItem = { name, done: false }
-      const qwe = await axios.post(
-        `https://back-basic-heroku.herokuapp.com/item`,
-        newItem
-      )
-      console.log(qwe)
-      getItems()
-      setFilter("")
-      setSort("desc")
-      setActivePage(1)
-      setLoading(false)
-    } catch (err) {
-      console.log(err.response)
-      alertMessege(err.response.data.message, "error")
-      setLoading(false)
-    }
-  }
-
-  const handleFilteredItems = (typeFilter = "all") => {
-    setFilter(typeFilter)
-    setActivePage(1)
-  }
-
-  const handleSort = (sortType = "new") => {
-    setSort(sortType)
-    setActivePage(1)
-  }
-
-  const handleDeleteItem = async (id) => {
-    try {
-      setLoading(true)
-      await axios.delete(`https://back-basic-heroku.herokuapp.com/item/${id}`)
-      getItems()
-      setLoading(false)
-    } catch (err) {
-      alertMessege(err.response.data.message, "error")
-      setLoading(false)
-    }
-  }
-
-  const handlePagination = (number, pagesize) => {
-    setActivePage(number)
-    setPageSize(pagesize)
-  }
-
-  const alertMessege = (text, type) => {
+  const alertMessage = (text, type) => {
     notification.open({
       description: text,
       type: type,
-    })
-  }
+    });
+  };
 
   return (
-    <Row justify="center">
-      <Col xxl={12} xl={13} lg={16} md={20} sm={22} xs={23}>
-        <Row justify="center">
-          <h2>ToDo</h2>
-        </Row>
-        <Row justify="center">
-          <AddItem handleAddItem={handleAddItem} />
-        </Row>
-        <SortFilterPanel
-          filter={filter}
-          sort={sort}
-          handleFilter={handleFilteredItems}
-          handleSort={handleSort}
+    <>
+      <Routes>
+        <Route
+          path="/login"
+          element={<Login links={links} handleError={handleError} />}
         />
-        <Spin spinning={loading}>
-          <Row justify="center">
-            <List
-              pageSize={pageSize}
-              items={itemsOnPage}
-              handleDeleteItem={handleDeleteItem}
-              getItems={getItems}
+        <Route
+          path="/registration"
+          element={
+            <Registration
+              links={links}
+              handleError={handleError}
+              alertMessage={alertMessage}
             />
-          </Row>
-          <Row justify="center">
-            <Pagination
-              style={{ marginBottom: "50px", marginTop: 50 }}
-              onChange={handlePagination}
-              total={countOfItems}
-              defaultCurrent={0}
-              current={activePage}
-              defaultPageSize={pageSize}
-              pageSize={pageSize}
-              pageSizeOptions={[5, 10, 15, 20]}
-              hideOnSinglePage={true}
+          }
+        />
+        <Route
+          path="/todos"
+          element={
+            <MainContent
+              links={links}
+              handleError={handleError}
+              alertMessage={alertMessage}
             />
-          </Row>
-        </Spin>
-      </Col>
-    </Row>
-  )
+          }
+        />
+        <Route path="*" element={<Navigate replace to="/todos" />} />
+      </Routes>
+    </>
+  );
 }
-export default App
+
+export default App;

@@ -1,78 +1,70 @@
-import { Col, Row, Checkbox, Button, Typography, Spin, notification } from "antd"
-import { DeleteOutlined } from "@ant-design/icons"
-import { useState } from "react"
-import axios from "axios"
+import { Col, Row, Checkbox, Button, Typography, Spin } from "antd";
+import { DeleteOutlined } from "@ant-design/icons";
+import { useState } from "react";
+import axios from "axios";
+import moment from "moment";
 
-const Item = ({ item, handleDeleteItem, getItems }) => {
-  const [name, setName] = useState(item.name)
-  const [done, setDone] = useState(item.status)
-  const [loading, setLoading] = useState(false)
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ]
-  const curDate = new Date(Date.parse(item.createdAt))
-
-  const timeObj = {}
-  timeObj.date = `${curDate.getDate()} ${months[curDate.getMonth()]}`
-  let createdTime = ""
-  curDate.getHours().toString().length === 2
-    ? (createdTime += curDate.getHours().toString())
-    : (createdTime += "0" + curDate.getHours().toString())
-  createdTime += ":"
-  curDate.getMinutes().toString().length === 2
-    ? (createdTime += curDate.getMinutes().toString())
-    : (createdTime += "0" + curDate.getMinutes().toString())
-  timeObj.time = createdTime
+const Item = ({ links, item, handleDeleteItem, getItems, handleError, token }) => {
+  const [name, setName] = useState(item.name);
+  const [done, setDone] = useState(item.status);
+  const [loading, setLoading] = useState(false);
 
   const handleEditName = async (newName) => {
     try {
-      setLoading(true)
-      const reg = /[\wа-яА-Я]/
-      if (newName.match(reg)) {
-        await axios.patch(`https://back-basic-heroku.herokuapp.com/item/${item.uuid}`, {
+      setLoading(true);
+      newName = newName.trim().replace(/\s+/g, " ");
+
+      if (!newName.match(/[\w]/)) throw new Error("meaningless content");
+      if (newName.length < 2 || newName.length > 100)
+        throw new Error("Need more, than 1 symbol and less, than 100");
+
+      await axios.patch(
+        `${links.postTodo}/${item.uuid}`,
+        {
           name: newName,
-        })
-        setName(newName)
-        setLoading(false)
-      }
+        },
+        {
+          headers: {
+            // Authorization: token,
+            Authorization: localStorage.getItem("accessToken"),
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setName(newName);
+      setLoading(false);
     } catch (err) {
-      alertMessege(err.response.data.message, "error")
-      setLoading(false)
+      handleError(err);
+      setLoading(false);
     }
-  }
+  };
 
-  const handleChangeStatus = async (newDone) => {
+  const handleChangeStatus = async (newStatus) => {
     try {
-      setLoading(true)
-      await axios.patch(`https://back-basic-heroku.herokuapp.com/item/${item.uuid}`, {
-        status: newDone,
-      })
-      setDone(newDone)
-      getItems()
-      setLoading(false)
+      setLoading(true);
+      await axios.patch(
+        `${links.postTodo}/${item.uuid}`,
+        {
+          status: newStatus,
+        },
+        {
+          headers: {
+            // Authorization: token,
+            Authorization: localStorage.getItem("accessToken"),
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setDone(newStatus);
+      getItems();
+      setLoading(false);
     } catch (err) {
-      alertMessege(err.response.data.message, "error")
-      setLoading(false)
+      handleError(err);
+      setLoading(false);
     }
-  }
-
-  const alertMessege = (text, type) => {
-    notification.open({
-      description: text,
-      type: type,
-    })
-  }
+  };
 
   return (
     <Spin spinning={loading}>
@@ -98,20 +90,20 @@ const Item = ({ item, handleDeleteItem, getItems }) => {
             {name}
           </Typography.Text>
         </Col>
-        <Col span={5}>{timeObj.time + " " + timeObj.date}</Col>
+        <Col span={5}>{moment(item.createdAt).format("LLL")}</Col>
         <Col span={2}>
           <Button
             danger={true}
             type="primary"
             icon={<DeleteOutlined />}
             onClick={() => {
-              handleDeleteItem(item.uuid)
+              handleDeleteItem(item.uuid);
             }}
           ></Button>
         </Col>
       </Row>
     </Spin>
-  )
-}
+  );
+};
 
-export default Item
+export default Item;
