@@ -4,7 +4,7 @@ import { notification } from "antd";
 import { Registration } from "./components/authorize/Registration";
 import { Login } from "./components/authorize/Login";
 
-const hostName = "http://localhost:5000";
+const hostName = "https://postgres-heroku-application.herokuapp.com";
 
 const links = {
   getTodos: `${hostName}/todos`,
