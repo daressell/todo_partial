@@ -18,10 +18,7 @@ export const MainContent = ({ links, handleError, alertMessage }) => {
 
   const getItems = async () => {
     try {
-      const link = `${links.getTodos}?${filter && `filterBy=${filter}`}&${
-        sort && `sortBy=${sort}`
-      }&${activePage && `page=${activePage}`}&${pageSize && `pageSize=${pageSize}`}
-        `;
+      const link = `${links.getTodos}?filterBy=${filter}&sortBy=${sort}&page=${activePage}&pageSize=${pageSize}`;
       const res = await axios.get(link, {
         headers: {
           Authorization: localStorage.getItem("accessToken"),

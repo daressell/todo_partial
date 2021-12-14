@@ -5,10 +5,7 @@ export const SortFilterPanel = ({ filter, sort, handleFilter, handleSort }) => {
     <Row style={{ marginTop: 10 }}>
       <Col span={12}>
         <Row>
-          <Button
-            type={filter === "" ? "primary" : "default"}
-            onClick={() => handleFilter("")}
-          >
+          <Button type={filter === "" ? "primary" : "default"} onClick={() => handleFilter("all")}>
             All
           </Button>
           <Button
@@ -27,16 +24,10 @@ export const SortFilterPanel = ({ filter, sort, handleFilter, handleSort }) => {
       </Col>
       <Col span={12}>
         <Row justify="end">
-          <Button
-            type={sort === "asc" ? "primary" : "default"}
-            onClick={() => handleSort("asc")}
-          >
+          <Button type={sort === "asc" ? "primary" : "default"} onClick={() => handleSort("asc")}>
             Old
           </Button>
-          <Button
-            type={sort === "desc" ? "primary" : "default"}
-            onClick={() => handleSort("desc")}
-          >
+          <Button type={sort === "desc" ? "primary" : "default"} onClick={() => handleSort("desc")}>
             New
           </Button>
         </Row>

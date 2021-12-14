@@ -4,7 +4,7 @@ import { notification } from "antd";
 import { Registration } from "./components/authorize/Registration";
 import { Login } from "./components/authorize/Login";
 
-const hostName = "https://postgres-heroku-application.herokuapp.com";
+const hostName = "http://localhost:5000";
 
 const links = {
   getTodos: `${hostName}/todos`,
@@ -34,28 +34,17 @@ function App() {
   return (
     <>
       <Routes>
-        <Route
-          path="/login"
-          element={<Login links={links} handleError={handleError} />}
-        />
+        <Route path="/login" element={<Login links={links} handleError={handleError} />} />
         <Route
           path="/registration"
           element={
-            <Registration
-              links={links}
-              handleError={handleError}
-              alertMessage={alertMessage}
-            />
+            <Registration links={links} handleError={handleError} alertMessage={alertMessage} />
           }
         />
         <Route
           path="/todos"
           element={
-            <MainContent
-              links={links}
-              handleError={handleError}
-              alertMessage={alertMessage}
-            />
+            <MainContent links={links} handleError={handleError} alertMessage={alertMessage} />
           }
         />
         <Route path="*" element={<Navigate replace to="/todos" />} />
