@@ -8,7 +8,7 @@ import axios from "axios";
 
 export const MainContent = ({ links, handleError, alertMessage }) => {
   const navigate = useNavigate();
-  const [filter, setFilter] = useState("");
+  const [filter, setFilter] = useState("all");
   const [sort, setSort] = useState("desc");
   const [activePage, setActivePage] = useState(1);
   const [itemsOnPage, setItemsOnPage] = useState([]);
@@ -59,7 +59,7 @@ export const MainContent = ({ links, handleError, alertMessage }) => {
         },
       });
       getItems();
-      setFilter("");
+      setFilter("all");
       setSort("desc");
       setActivePage(1);
       setLoading(false);
@@ -111,6 +111,14 @@ export const MainContent = ({ links, handleError, alertMessage }) => {
     }
   };
 
+  const handleOnDragEnd = async (result) => {
+    if (!result.destination) return;
+    const updateItems = [...itemsOnPage];
+    const dragTodo = updateItems.splice(result.source.index, 1)[0];
+    updateItems.splice(result.destination.index, 0, dragTodo);
+    setItemsOnPage(updateItems);
+  };
+
   return (
     <>
       {localStorage.getItem("accessToken") && (
@@ -148,6 +156,7 @@ export const MainContent = ({ links, handleError, alertMessage }) => {
                     items={itemsOnPage}
                     handleDeleteItem={handleDeleteItem}
                     getItems={getItems}
+                    handleOnDragEnd={handleOnDragEnd}
                     handleError={handleError}
                   />
                 </Row>
