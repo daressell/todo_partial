@@ -14,9 +14,7 @@ export const Registration = ({ links, handleError, alertMessage }) => {
     try {
       const newUser = values;
       if (!newUser.login.match(/^(?=.*[A-Za-z])[\w]{4,100}$/))
-        throw new Error(
-          "bad name validation, need 4-100 symbols and use only a-b and numbers"
-        );
+        throw new Error("bad name validation, need 4-100 symbols and use only a-b and numbers");
 
       if (!newUser.password.match(/^(?=.*[A-Za-z])(?=.*\d)[\w]{8,100}$/))
         throw new Error("need more difficult password, uisng only a-b and numbers");
