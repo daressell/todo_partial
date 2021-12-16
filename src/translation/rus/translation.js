@@ -1,0 +1,23 @@
+// eslint-disable-next-line import/no-anonymous-default-export
+export default {
+  quit: "Выйти",
+  all: "Все",
+  done: "Сделанные",
+  undone: "Не сделанные",
+  todoTitle: "Туду",
+  old: "Старые",
+  new: "Новые",
+  signIn: "Войти",
+  signUp: "Зарегестрироваться",
+  signInLink: "Уже есть аккаунт",
+  signUpLink: "Регистрация",
+  mesInputLogin: "Пожалуйста, введите логин!",
+  mesInputPassword: "Пожалуйста, введите пароль!",
+  mesInputConfirm: "Пожалуйста, повторите пароль!",
+  login: "Логин",
+  password: "Пароль",
+  confirm: "Подтверждение пароля",
+  registration: "Регистрация",
+  ru: "Русский",
+  en: "English",
+};

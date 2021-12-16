@@ -2,9 +2,12 @@ import { Button, Form, Input, Row, Col, Space, Typography } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import axios from "axios";
+import { useTranslation } from "react-i18next";
+import "../../translation/index.js";
 
 export const Registration = ({ links, handleError, alertMessage }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     localStorage.removeItem("accessToken");
@@ -42,7 +45,7 @@ export const Registration = ({ links, handleError, alertMessage }) => {
       <Row type="flex" justify="center" align="middle" style={{ minHeight: "80vh" }}>
         <Col xxl={12} xl={13} lg={16} md={20} sm={22} xs={23}>
           <Row justify="center">
-            <h2>Registration</h2>
+            <h2>{t("registration")}</h2>
           </Row>
           <Form
             name="basic"
@@ -60,12 +63,12 @@ export const Registration = ({ links, handleError, alertMessage }) => {
             autoComplete="off"
           >
             <Form.Item
-              label="Login"
+              label={t("login")}
               name="login"
               rules={[
                 {
                   required: true,
-                  message: "Please input your login!",
+                  message: t("mesInputLogin"),
                 },
               ]}
             >
@@ -73,12 +76,12 @@ export const Registration = ({ links, handleError, alertMessage }) => {
             </Form.Item>
 
             <Form.Item
-              label="Password"
+              label={t("password")}
               name="password"
               rules={[
                 {
                   required: true,
-                  message: "Please input your password!",
+                  message: t("mesInputPassword"),
                 },
               ]}
             >
@@ -86,13 +89,13 @@ export const Registration = ({ links, handleError, alertMessage }) => {
             </Form.Item>
             <Form.Item
               name="confirm"
-              label="Confirm Password"
+              label={t("confirm")}
               dependencies={["password"]}
               hasFeedback
               rules={[
                 {
                   required: true,
-                  message: "Please confirm your password!",
+                  message: t("mesInputConfirm"),
                 },
                 ({ getFieldValue }) => ({
                   validator(_, value) {
@@ -117,10 +120,10 @@ export const Registration = ({ links, handleError, alertMessage }) => {
             >
               <Space>
                 <Button type="primary" htmlType="submit">
-                  Sign up
+                  {t("signUp")}
                 </Button>
                 <Typography.Text>
-                  <Link to="/login">Sign in</Link>
+                  <Link to="/login">{t("signIn")}</Link>
                 </Typography.Text>
               </Space>
             </Form.Item>

@@ -2,9 +2,12 @@ import { Button, Form, Input, Row, Col, Space, Typography } from "antd";
 import axios from "axios";
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import "../../translation/index.js";
 
 export const Login = ({ links, handleError }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     localStorage.removeItem("accessToken");
@@ -33,7 +36,7 @@ export const Login = ({ links, handleError }) => {
       <Row type="flex" justify="center" align="middle" style={{ minHeight: "80vh" }}>
         <Col xxl={12} xl={13} lg={16} md={20} sm={22} xs={23}>
           <Row justify="center">
-            <h2>Login</h2>
+            <h2>{t("login")}</h2>
           </Row>
           <Form
             name="basic"
@@ -51,12 +54,12 @@ export const Login = ({ links, handleError }) => {
             autoComplete="off"
           >
             <Form.Item
-              label="Login"
+              label={t("login")}
               name="login"
               rules={[
                 {
                   required: true,
-                  message: "Please input your login!",
+                  message: t("mesInputLogin"),
                 },
               ]}
             >
@@ -64,12 +67,12 @@ export const Login = ({ links, handleError }) => {
             </Form.Item>
 
             <Form.Item
-              label="Password"
+              label={t("password")}
               name="password"
               rules={[
                 {
                   required: true,
-                  message: "Please input your password!",
+                  message: t("mesInputPassword"),
                 },
               ]}
             >
@@ -84,10 +87,10 @@ export const Login = ({ links, handleError }) => {
             >
               <Space>
                 <Button type="primary" htmlType="submit">
-                  Sign in
+                  {t("signIn")}
                 </Button>
                 <Typography.Text>
-                  <Link to="/registration">Sign up</Link>
+                  <Link to="/registration">{t("signUpLink")}</Link>
                 </Typography.Text>
               </Space>
             </Form.Item>

@@ -3,10 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { AddItem } from "./AddItem";
 import { List } from "./List";
 import { SortFilterPanel } from "./SortFilterPanel";
-import { Col, Pagination, Row, Spin, Menu } from "antd";
+import { Col, Pagination, Row, Spin, Menu, Select } from "antd";
+import { useTranslation } from "react-i18next";
 import axios from "axios";
+import i18n from "i18next";
+import "../translation/index.js";
 
 export const MainContent = ({ links, handleError, alertMessage }) => {
+  const { t } = useTranslation();
+  const { Option } = Select;
   const navigate = useNavigate();
   const [filter, setFilter] = useState("all");
   const [sort, setSort] = useState("desc");
@@ -126,7 +131,6 @@ export const MainContent = ({ links, handleError, alertMessage }) => {
     if (!result.destination) return;
     try {
       setLoading(true);
-
       const updateItems = [...itemsOnPage];
       const dragTodo = updateItems.splice(result.source.index, 1)[0];
       updateItems.splice(result.destination.index, 0, dragTodo);
@@ -157,6 +161,11 @@ export const MainContent = ({ links, handleError, alertMessage }) => {
     }
   };
 
+  const handleEditLanguage = (res) => {
+    console.log(i18n.getResource);
+    i18n.changeLanguage(res);
+  };
+
   return (
     <>
       {localStorage.getItem("accessToken") && (
@@ -168,14 +177,20 @@ export const MainContent = ({ links, handleError, alertMessage }) => {
             theme="dark"
             style={{ display: "flex", justifyContent: "end" }}
           >
+            <Menu.Item>
+              <Select defaultValue="en" onChange={handleEditLanguage}>
+                <Option value="ru">{t("ru")}</Option>
+                <Option value="en">{t("en")}</Option>
+              </Select>
+            </Menu.Item>
             <Menu.Item key="logout" danger={true}>
-              Выйти
+              {t("quit")}
             </Menu.Item>
           </Menu>
           <Row type="flex" justify="center" align="middle" style={{ minHeight: "80vh" }}>
             <Col xxl={12} xl={13} lg={16} md={20} sm={22} xs={23}>
               <Row justify="center">
-                <h2>ToDo</h2>
+                <h2>{t("todoTitle")}</h2>
               </Row>
               <Row justify="center">
                 <AddItem handleAddItem={handleAddItem} />
