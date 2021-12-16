@@ -11,6 +11,7 @@ const links = {
   postTodo: `${hostName}/todo`,
   login: `${hostName}/login`,
   registration: `${hostName}/registration`,
+  todosMoved: `${hostName}/todosMoved`,
 };
 
 function App() {

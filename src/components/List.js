@@ -3,10 +3,9 @@ import { Col } from "antd";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 export const List = ({
-  links,
   items,
-  handleDeleteItem,
   handleEditItem,
+  handleDeleteItem,
   getItems,
   handleOnDragEnd,
   handleError,
@@ -26,10 +25,9 @@ export const List = ({
                       {...provided.dragHandleProps}
                     >
                       <Item
-                        links={links}
                         item={todo}
-                        handleDeleteItem={handleDeleteItem}
                         handleEditItem={handleEditItem}
+                        handleDeleteItem={handleDeleteItem}
                         getItems={getItems}
                         handleError={handleError}
                       />
