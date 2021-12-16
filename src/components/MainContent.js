@@ -8,7 +8,7 @@ import axios from "axios";
 
 export const MainContent = ({ links, handleError, alertMessage }) => {
   const navigate = useNavigate();
-  const [filter, setFilter] = useState("");
+  const [filter, setFilter] = useState("all");
   const [sort, setSort] = useState("desc");
   const [activePage, setActivePage] = useState(1);
   const [itemsOnPage, setItemsOnPage] = useState([]);
@@ -51,7 +51,7 @@ export const MainContent = ({ links, handleError, alertMessage }) => {
       if (name.length < 2) throw new Error("Need more, than 1 symbol");
       setLoading(true);
       const newItem = { name, done: false };
-      await axios.post(`${links.postTodo}`, newItem, {
+      await axios.post(links.postTodo, newItem, {
         headers: {
           Authorization: localStorage.getItem("accessToken"),
           "Access-Control-Allow-Origin": "*",
@@ -59,7 +59,7 @@ export const MainContent = ({ links, handleError, alertMessage }) => {
         },
       });
       getItems();
-      setFilter("");
+      setFilter("all");
       setSort("desc");
       setActivePage(1);
       setLoading(false);
@@ -77,6 +77,17 @@ export const MainContent = ({ links, handleError, alertMessage }) => {
   const handleSort = (sortType = "new") => {
     setSort(sortType);
     setActivePage(1);
+  };
+
+  const handleEditItem = async (params, uuid) => {
+    await axios.patch(`${links.postTodo}/${uuid}`, params, {
+      headers: {
+        Authorization: localStorage.getItem("accessToken"),
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json",
+      },
+    });
+    typeof params.status === "boolean" && getItems();
   };
 
   const handleDeleteItem = async (id) => {
@@ -108,6 +119,41 @@ export const MainContent = ({ links, handleError, alertMessage }) => {
     if (key === "logout") {
       localStorage.removeItem("accessToken");
       navigate("/login");
+    }
+  };
+
+  const handleOnDragEnd = async (result) => {
+    if (!result.destination) return;
+    try {
+      setLoading(true);
+
+      const updateItems = [...itemsOnPage];
+      const dragTodo = updateItems.splice(result.source.index, 1)[0];
+      updateItems.splice(result.destination.index, 0, dragTodo);
+      const arrIndex = itemsOnPage.map((item) => item.index);
+      const arrOfTodos = updateItems.map((todo, i) => {
+        return { uuid: todo.uuid, index: arrIndex[i] };
+      });
+      updateItems.forEach((item, i) => {
+        item.index = arrOfTodos[i].index;
+        return item;
+      });
+      setItemsOnPage(updateItems);
+      await axios.patch(
+        links.todosMoved,
+        { todos: arrOfTodos },
+        {
+          headers: {
+            Authorization: localStorage.getItem("accessToken"),
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setLoading(false);
+    } catch (err) {
+      handleError(err);
+      setLoading(false);
     }
   };
 
@@ -143,11 +189,12 @@ export const MainContent = ({ links, handleError, alertMessage }) => {
               <Spin spinning={loading}>
                 <Row justify="center">
                   <List
-                    links={links}
                     pageSize={pageSize}
                     items={itemsOnPage}
+                    handleEditItem={handleEditItem}
                     handleDeleteItem={handleDeleteItem}
                     getItems={getItems}
+                    handleOnDragEnd={handleOnDragEnd}
                     handleError={handleError}
                   />
                 </Row>

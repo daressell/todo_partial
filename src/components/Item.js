@@ -1,15 +1,14 @@
 import { Col, Row, Checkbox, Button, Typography, Spin } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 import { useState } from "react";
-import axios from "axios";
 import moment from "moment";
 
-const Item = ({ links, item, handleDeleteItem, getItems, handleError, token }) => {
+const Item = ({ item, handleEditItem, handleDeleteItem, getItems, handleError }) => {
   const [name, setName] = useState(item.name);
   const [done, setDone] = useState(item.status);
   const [loading, setLoading] = useState(false);
 
-  const handleEditName = async (newName) => {
+  const editName = async (newName) => {
     try {
       setLoading(true);
       newName = newName.trim().replace(/\s+/g, " ");
@@ -18,20 +17,7 @@ const Item = ({ links, item, handleDeleteItem, getItems, handleError, token }) =
       if (newName.length < 2 || newName.length > 100)
         throw new Error("Need more, than 1 symbol and less, than 100");
 
-      await axios.patch(
-        `${links.postTodo}/${item.uuid}`,
-        {
-          name: newName,
-        },
-        {
-          headers: {
-            // Authorization: token,
-            Authorization: localStorage.getItem("accessToken"),
-            "Access-Control-Allow-Origin": "*",
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      await handleEditItem({ name: newName }, item.uuid);
       setName(newName);
       setLoading(false);
     } catch (err) {
@@ -40,25 +26,11 @@ const Item = ({ links, item, handleDeleteItem, getItems, handleError, token }) =
     }
   };
 
-  const handleChangeStatus = async (newStatus) => {
+  const changeStatus = async (newStatus) => {
     try {
       setLoading(true);
-      await axios.patch(
-        `${links.postTodo}/${item.uuid}`,
-        {
-          status: newStatus,
-        },
-        {
-          headers: {
-            // Authorization: token,
-            Authorization: localStorage.getItem("accessToken"),
-            "Access-Control-Allow-Origin": "*",
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      await handleEditItem({ status: newStatus }, item.uuid);
       setDone(newStatus);
-      getItems();
       setLoading(false);
     } catch (err) {
       handleError(err);
@@ -76,17 +48,10 @@ const Item = ({ links, item, handleDeleteItem, getItems, handleError, token }) =
         style={{ padding: 20, marginTop: 10 }}
       >
         <Col span={3} className="item-data">
-          <Checkbox
-            checked={done ? true : false}
-            onChange={() => handleChangeStatus(!done)}
-          ></Checkbox>
+          <Checkbox checked={done ? true : false} onChange={() => changeStatus(!done)}></Checkbox>
         </Col>
         <Col span={14} className="item-data">
-          <Typography.Text
-            className="item-name"
-            ellipsis={true}
-            editable={{ onChange: handleEditName }}
-          >
+          <Typography.Text className="item-name" ellipsis={true} editable={{ onChange: editName }}>
             {name}
           </Typography.Text>
         </Col>

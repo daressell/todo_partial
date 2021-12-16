@@ -1,32 +1,45 @@
 import Item from "./Item";
 import { Col } from "antd";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 export const List = ({
-  links,
   items,
-  handleDeleteItem,
   handleEditItem,
+  handleDeleteItem,
   getItems,
+  handleOnDragEnd,
   handleError,
-  // token,
 }) => {
   return (
-    <Col span={24} className="items">
-      {items.map((item) => {
-        return (
-          <div key={item.uuid} style={{ marginTop: 10, maxHeight: 80 }}>
-            <Item
-              links={links}
-              item={item}
-              handleDeleteItem={handleDeleteItem}
-              handleEditItem={handleEditItem}
-              getItems={getItems}
-              handleError={handleError}
-              // token={token}
-            />
-          </div>
-        );
-      })}
-    </Col>
+    <DragDropContext onDragEnd={handleOnDragEnd}>
+      <Droppable droppableId="todos">
+        {(provided) => (
+          <Col span={24} className="todos" {...provided.droppableProps} ref={provided.innerRef}>
+            {items.map((todo, index) => {
+              return (
+                <Draggable key={todo.uuid} draggableId={todo.name} index={index}>
+                  {(provided) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
+                      <Item
+                        item={todo}
+                        handleEditItem={handleEditItem}
+                        handleDeleteItem={handleDeleteItem}
+                        getItems={getItems}
+                        handleError={handleError}
+                      />
+                    </div>
+                  )}
+                </Draggable>
+              );
+            })}
+            {provided.placeholder}
+          </Col>
+        )}
+      </Droppable>
+    </DragDropContext>
   );
 };
