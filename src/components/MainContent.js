@@ -126,11 +126,17 @@ export const MainContent = ({ links, handleError, alertMessage }) => {
     if (!result.destination) return;
     try {
       setLoading(true);
+
       const updateItems = [...itemsOnPage];
       const dragTodo = updateItems.splice(result.source.index, 1)[0];
       updateItems.splice(result.destination.index, 0, dragTodo);
-      const arrOfTodos = updateItems.map((todo, index) => {
-        return { uuid: todo.uuid, index: itemsOnPage[index].index };
+      const arrIndex = itemsOnPage.map((item) => item.index);
+      const arrOfTodos = updateItems.map((todo, i) => {
+        return { uuid: todo.uuid, index: arrIndex[i] };
+      });
+      updateItems.forEach((item, i) => {
+        item.index = arrOfTodos[i].index;
+        return item;
       });
       setItemsOnPage(updateItems);
       await axios.patch(
@@ -144,7 +150,6 @@ export const MainContent = ({ links, handleError, alertMessage }) => {
           },
         }
       );
-      getItems();
       setLoading(false);
     } catch (err) {
       handleError(err);
