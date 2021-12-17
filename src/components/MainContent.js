@@ -4,13 +4,11 @@ import { AddItem } from "./AddItem";
 import { List } from "./List";
 import { SortFilterPanel } from "./SortFilterPanel";
 import { Col, Pagination, Row, Spin, Menu, Select } from "antd";
-import { useTranslation } from "react-i18next";
 import axios from "axios";
 import i18n from "i18next";
 import "../translation/index.js";
 
-export const MainContent = ({ links, handleError, alertMessage }) => {
-  const { t } = useTranslation();
+export const MainContent = ({ t, links, handleError, handleChangeLanguage, alertMessage }) => {
   const { Option } = Select;
   const navigate = useNavigate();
   const [filter, setFilter] = useState("all");
@@ -37,7 +35,7 @@ export const MainContent = ({ links, handleError, alertMessage }) => {
       if (res.data.countOfTodos !== 0) {
         setCountOfItems(res.data.countOfTodos);
       } else {
-        alertMessage(`${filter} items is empty`, "info");
+        alertMessage(t("itemsEmpty"), "info");
         setCountOfItems(0);
       }
     } catch (err) {
@@ -52,8 +50,8 @@ export const MainContent = ({ links, handleError, alertMessage }) => {
   const handleAddItem = async (name) => {
     try {
       name = name.trim().replace(/\s+/g, " ");
-      if (!name) throw new Error("Bad name");
-      if (name.length < 2) throw new Error("Need more, than 1 symbol");
+      if (!name) throw new Error(t("errBadName"));
+      if (name.length < 2 || name.length > 100) throw new Error(t("errItemName"));
       setLoading(true);
       const newItem = { name, done: false };
       await axios.post(links.postTodo, newItem, {
@@ -161,11 +159,6 @@ export const MainContent = ({ links, handleError, alertMessage }) => {
     }
   };
 
-  const handleEditLanguage = (res) => {
-    console.log(i18n.getResource);
-    i18n.changeLanguage(res);
-  };
-
   return (
     <>
       {localStorage.getItem("accessToken") && (
@@ -177,8 +170,8 @@ export const MainContent = ({ links, handleError, alertMessage }) => {
             theme="dark"
             style={{ display: "flex", justifyContent: "end" }}
           >
-            <Menu.Item>
-              <Select defaultValue="en" onChange={handleEditLanguage}>
+            <Menu.Item key="languages">
+              <Select defaultValue={i18n.language} onChange={handleChangeLanguage}>
                 <Option value="ru">{t("ru")}</Option>
                 <Option value="en">{t("en")}</Option>
               </Select>
@@ -196,6 +189,7 @@ export const MainContent = ({ links, handleError, alertMessage }) => {
                 <AddItem handleAddItem={handleAddItem} />
               </Row>
               <SortFilterPanel
+                t={t}
                 filter={filter}
                 sort={sort}
                 handleFilter={handleFilteredItems}
@@ -204,6 +198,7 @@ export const MainContent = ({ links, handleError, alertMessage }) => {
               <Spin spinning={loading}>
                 <Row justify="center">
                   <List
+                    t={t}
                     pageSize={pageSize}
                     items={itemsOnPage}
                     handleEditItem={handleEditItem}

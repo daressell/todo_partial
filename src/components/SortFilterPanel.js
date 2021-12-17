@@ -1,9 +1,7 @@
 import { Row, Button, Col } from "antd";
-import { useTranslation } from "react-i18next";
 import "../translation/index.js";
 
-export const SortFilterPanel = ({ filter, sort, handleFilter, handleSort }) => {
-  const { t } = useTranslation();
+export const SortFilterPanel = ({ t, filter, sort, handleFilter, handleSort }) => {
   return (
     <Row style={{ marginTop: 10 }}>
       <Col span={12}>

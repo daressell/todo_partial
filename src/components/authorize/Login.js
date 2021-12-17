@@ -1,14 +1,13 @@
-import { Button, Form, Input, Row, Col, Space, Typography } from "antd";
+import { Button, Form, Input, Row, Col, Space, Typography, Select } from "antd";
 import axios from "axios";
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import "../../translation/index.js";
+import i18n from "i18next";
 
-export const Login = ({ links, handleError }) => {
+export const Login = ({ t, links, handleError, handleChangeLanguage }) => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
-
+  const { Option } = Select;
   useEffect(() => {
     localStorage.removeItem("accessToken");
   }, []);
@@ -78,22 +77,26 @@ export const Login = ({ links, handleError }) => {
             >
               <Input.Password />
             </Form.Item>
-
-            <Form.Item
-              wrapperCol={{
-                offset: 5,
-                span: 16,
-              }}
-            >
-              <Space>
-                <Button type="primary" htmlType="submit">
-                  {t("signIn")}
-                </Button>
-                <Typography.Text>
-                  <Link to="/registration">{t("signUpLink")}</Link>
-                </Typography.Text>
-              </Space>
-            </Form.Item>
+            <Row>
+              <Col offset={5} span={8}>
+                <Space>
+                  <Button type="primary" htmlType="submit">
+                    {t("signIn")}
+                  </Button>
+                  <Typography.Text>
+                    <Link to="/registration">{t("signUpLink")}</Link>
+                  </Typography.Text>
+                </Space>
+              </Col>
+              <Col span={8}>
+                <Row justify="end">
+                  <Select defaultValue={i18n.language} onChange={handleChangeLanguage}>
+                    <Option value="ru">{t("ru")}</Option>
+                    <Option value="en">{t("en")}</Option>
+                  </Select>
+                </Row>
+              </Col>
+            </Row>
           </Form>
         </Col>
       </Row>
