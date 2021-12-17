@@ -1,10 +1,13 @@
-import { Button, Form, Input, Row, Col, Space, Typography } from "antd";
+import { Button, Form, Input, Row, Col, Space, Typography, Select } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import axios from "axios";
+import "../../translation/index.js";
+import i18n from "i18next";
 
-export const Registration = ({ links, handleError, alertMessage }) => {
+export const Registration = ({ t, links, handleError, handleChangeLanguage, alertMessage }) => {
   const navigate = useNavigate();
+  const { Option } = Select;
 
   useEffect(() => {
     localStorage.removeItem("accessToken");
@@ -13,17 +16,15 @@ export const Registration = ({ links, handleError, alertMessage }) => {
   const onFinish = async (values) => {
     try {
       const newUser = values;
-      if (!newUser.login.match(/^(?=.*[A-Za-z])[\w]{4,100}$/))
-        throw new Error("bad name validation, need 4-100 symbols and use only a-b and numbers");
+      if (!newUser.login.match(/^(?=.*[A-Za-z])[\w]{4,100}$/)) throw new Error(t("errLoginValid"));
 
       if (!newUser.password.match(/^(?=.*[A-Za-z])(?=.*\d)[\w]{8,100}$/))
-        throw new Error("need more difficult password, uisng only a-b and numbers");
+        throw new Error(t("errPassValid"));
 
-      if (newUser.password !== newUser.confirm)
-        throw new Error("confirm and passwor must be equal");
+      if (newUser.password !== newUser.confirm) throw new Error(t("errConfirm"));
 
       await axios.post(links.registration, newUser);
-      alertMessage("Success registration", "success");
+      alertMessage(t("successRigistr"), "success");
       navigate("/login");
     } catch (err) {
       handleError(err);
@@ -42,7 +43,7 @@ export const Registration = ({ links, handleError, alertMessage }) => {
       <Row type="flex" justify="center" align="middle" style={{ minHeight: "80vh" }}>
         <Col xxl={12} xl={13} lg={16} md={20} sm={22} xs={23}>
           <Row justify="center">
-            <h2>Registration</h2>
+            <h2>{t("registration")}</h2>
           </Row>
           <Form
             name="basic"
@@ -60,12 +61,12 @@ export const Registration = ({ links, handleError, alertMessage }) => {
             autoComplete="off"
           >
             <Form.Item
-              label="Login"
+              label={t("login")}
               name="login"
               rules={[
                 {
                   required: true,
-                  message: "Please input your login!",
+                  message: t("mesInputLogin"),
                 },
               ]}
             >
@@ -73,12 +74,12 @@ export const Registration = ({ links, handleError, alertMessage }) => {
             </Form.Item>
 
             <Form.Item
-              label="Password"
+              label={t("password")}
               name="password"
               rules={[
                 {
                   required: true,
-                  message: "Please input your password!",
+                  message: t("mesInputPassword"),
                 },
               ]}
             >
@@ -86,13 +87,13 @@ export const Registration = ({ links, handleError, alertMessage }) => {
             </Form.Item>
             <Form.Item
               name="confirm"
-              label="Confirm Password"
+              label={t("confirm")}
               dependencies={["password"]}
               hasFeedback
               rules={[
                 {
                   required: true,
-                  message: "Please confirm your password!",
+                  message: t("mesInputConfirm"),
                 },
                 ({ getFieldValue }) => ({
                   validator(_, value) {
@@ -109,21 +110,26 @@ export const Registration = ({ links, handleError, alertMessage }) => {
               <Input.Password />
             </Form.Item>
 
-            <Form.Item
-              wrapperCol={{
-                offset: 5,
-                span: 16,
-              }}
-            >
-              <Space>
-                <Button type="primary" htmlType="submit">
-                  Sign up
-                </Button>
-                <Typography.Text>
-                  <Link to="/login">Sign in</Link>
-                </Typography.Text>
-              </Space>
-            </Form.Item>
+            <Row>
+              <Col span={8} offset={5}>
+                <Space>
+                  <Button type="primary" htmlType="submit">
+                    {t("signUp")}
+                  </Button>
+                  <Typography.Text>
+                    <Link to="/login">{t("signInLink")}</Link>
+                  </Typography.Text>
+                </Space>
+              </Col>
+              <Col span={8}>
+                <Row justify="end">
+                  <Select defaultValue={i18n.language} onChange={handleChangeLanguage}>
+                    <Option value="ru">{t("ru")}</Option>
+                    <Option value="en">{t("en")}</Option>
+                  </Select>
+                </Row>
+              </Col>
+            </Row>
           </Form>
         </Col>
       </Row>

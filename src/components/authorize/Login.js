@@ -1,11 +1,13 @@
-import { Button, Form, Input, Row, Col, Space, Typography } from "antd";
+import { Button, Form, Input, Row, Col, Space, Typography, Select } from "antd";
 import axios from "axios";
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import "../../translation/index.js";
+import i18n from "i18next";
 
-export const Login = ({ links, handleError }) => {
+export const Login = ({ t, links, handleError, handleChangeLanguage }) => {
   const navigate = useNavigate();
-
+  const { Option } = Select;
   useEffect(() => {
     localStorage.removeItem("accessToken");
   }, []);
@@ -33,7 +35,7 @@ export const Login = ({ links, handleError }) => {
       <Row type="flex" justify="center" align="middle" style={{ minHeight: "80vh" }}>
         <Col xxl={12} xl={13} lg={16} md={20} sm={22} xs={23}>
           <Row justify="center">
-            <h2>Login</h2>
+            <h2>{t("login")}</h2>
           </Row>
           <Form
             name="basic"
@@ -51,12 +53,12 @@ export const Login = ({ links, handleError }) => {
             autoComplete="off"
           >
             <Form.Item
-              label="Login"
+              label={t("login")}
               name="login"
               rules={[
                 {
                   required: true,
-                  message: "Please input your login!",
+                  message: t("mesInputLogin"),
                 },
               ]}
             >
@@ -64,33 +66,37 @@ export const Login = ({ links, handleError }) => {
             </Form.Item>
 
             <Form.Item
-              label="Password"
+              label={t("password")}
               name="password"
               rules={[
                 {
                   required: true,
-                  message: "Please input your password!",
+                  message: t("mesInputPassword"),
                 },
               ]}
             >
               <Input.Password />
             </Form.Item>
-
-            <Form.Item
-              wrapperCol={{
-                offset: 5,
-                span: 16,
-              }}
-            >
-              <Space>
-                <Button type="primary" htmlType="submit">
-                  Sign in
-                </Button>
-                <Typography.Text>
-                  <Link to="/registration">Sign up</Link>
-                </Typography.Text>
-              </Space>
-            </Form.Item>
+            <Row>
+              <Col offset={5} span={8}>
+                <Space>
+                  <Button type="primary" htmlType="submit">
+                    {t("signIn")}
+                  </Button>
+                  <Typography.Text>
+                    <Link to="/registration">{t("signUpLink")}</Link>
+                  </Typography.Text>
+                </Space>
+              </Col>
+              <Col span={8}>
+                <Row justify="end">
+                  <Select defaultValue={i18n.language} onChange={handleChangeLanguage}>
+                    <Option value="ru">{t("ru")}</Option>
+                    <Option value="en">{t("en")}</Option>
+                  </Select>
+                </Row>
+              </Col>
+            </Row>
           </Form>
         </Col>
       </Row>

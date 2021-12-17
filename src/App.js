@@ -3,6 +3,9 @@ import { MainContent } from "./components/MainContent";
 import { notification } from "antd";
 import { Registration } from "./components/authorize/Registration";
 import { Login } from "./components/authorize/Login";
+import i18n from "i18next";
+import { useTranslation } from "react-i18next";
+import "moment/locale/ru.js";
 
 const hostName = "http://localhost:5000";
 
@@ -15,6 +18,7 @@ const links = {
 };
 
 function App() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   const handleError = (err) => {
@@ -23,6 +27,10 @@ function App() {
       return err.response?.data?.includes("jwt") && navigate("/login");
     }
     if (err.message) return alertMessage(err.message, "error");
+  };
+
+  const handleChangeLanguage = (res) => {
+    i18n.changeLanguage(res);
   };
 
   const alertMessage = (text, type) => {
@@ -35,17 +43,39 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path="/login" element={<Login links={links} handleError={handleError} />} />
+        <Route
+          path="/login"
+          element={
+            <Login
+              t={t}
+              links={links}
+              handleError={handleError}
+              handleChangeLanguage={handleChangeLanguage}
+            />
+          }
+        />
         <Route
           path="/registration"
           element={
-            <Registration links={links} handleError={handleError} alertMessage={alertMessage} />
+            <Registration
+              t={t}
+              links={links}
+              handleError={handleError}
+              handleChangeLanguage={handleChangeLanguage}
+              alertMessage={alertMessage}
+            />
           }
         />
         <Route
           path="/todos"
           element={
-            <MainContent links={links} handleError={handleError} alertMessage={alertMessage} />
+            <MainContent
+              t={t}
+              links={links}
+              handleError={handleError}
+              handleChangeLanguage={handleChangeLanguage}
+              alertMessage={alertMessage}
+            />
           }
         />
         <Route path="*" element={<Navigate replace to="/todos" />} />

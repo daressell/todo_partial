@@ -1,0 +1,32 @@
+// eslint-disable-next-line import/no-anonymous-default-export
+export default {
+  quit: "Quit",
+  all: "All",
+  done: "Done",
+  undone: "Undone",
+  todoTitle: "Todo",
+  old: "Old",
+  new: "New",
+  signIn: "Sign In",
+  signUp: "Sign Up",
+  signInLink: "Account already have",
+  signUpLink: "Registration",
+  mesInputLogin: "Please input your login!",
+  mesInputPassword: "Please input your password!",
+  mesInputConfirm: "Please confirm your password!",
+  login: "Login",
+  password: "Password",
+  confirm: "Confirm password",
+  registration: "Registration",
+  ru: "Русский",
+  en: "English",
+  errLoginValid:
+    "bad login validation, need 4-100 symbols and must with letters and can with numbers",
+  errPassValid: "need more difficult password, uisng only a-b and numbers",
+  errConfirm: "confirm and passwor must be equal",
+  successRigistr: "Success registration",
+  errItemName: "Need more, than 1 symbol and less, than 100",
+  errMeaninglessContent: "meaningless content",
+  itemsEmpty: "list is empty",
+  errBadName: "Invalid name"
+};
