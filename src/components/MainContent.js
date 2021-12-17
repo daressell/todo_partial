@@ -51,6 +51,7 @@ export const MainContent = ({ t, links, handleError, handleChangeLanguage, alert
     try {
       name = name.trim().replace(/\s+/g, " ");
       if (!name) throw new Error(t("errBadName"));
+      if (!name.match(/[0-9А-Яа-яA-Za-z]/)) throw new Error(t("errMeaninglessContent"));
       if (name.length < 2 || name.length > 100) throw new Error(t("errItemName"));
       setLoading(true);
       const newItem = { name, done: false };
@@ -126,7 +127,6 @@ export const MainContent = ({ t, links, handleError, handleChangeLanguage, alert
   };
 
   const handleOnDragEnd = async (result) => {
-    console.log(result);
     if (!result.destination) return;
     try {
       setLoading(true);
@@ -204,7 +204,6 @@ export const MainContent = ({ t, links, handleError, handleChangeLanguage, alert
                     items={itemsOnPage}
                     handleEditItem={handleEditItem}
                     handleDeleteItem={handleDeleteItem}
-                    getItems={getItems}
                     handleOnDragEnd={handleOnDragEnd}
                     handleError={handleError}
                   />

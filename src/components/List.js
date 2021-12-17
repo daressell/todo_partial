@@ -7,7 +7,6 @@ export const List = ({
   items,
   handleEditItem,
   handleDeleteItem,
-  getItems,
   handleOnDragEnd,
   handleError,
 }) => {
@@ -30,7 +29,6 @@ export const List = ({
                         item={todo}
                         handleEditItem={handleEditItem}
                         handleDeleteItem={handleDeleteItem}
-                        getItems={getItems}
                         handleError={handleError}
                       />
                     </div>

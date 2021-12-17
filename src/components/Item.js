@@ -15,7 +15,7 @@ const Item = ({ t, item, handleEditItem, handleDeleteItem, handleError }) => {
       setLoading(true);
       newName = newName.trim().replace(/\s+/g, " ");
 
-      if (!newName.match(/[\w]/)) throw new Error(t("errMeaninglessContent"));
+      if (!newName.match(/[0-9А-Яа-яA-Za-z]/)) throw new Error(t("errMeaninglessContent"));
       if (newName.length < 2 || newName.length > 100) throw new Error(t("errItemName"));
 
       await handleEditItem({ name: newName }, item.uuid);
