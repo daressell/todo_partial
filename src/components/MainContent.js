@@ -126,6 +126,7 @@ export const MainContent = ({ t, links, handleError, handleChangeLanguage, alert
   };
 
   const handleOnDragEnd = async (result) => {
+    console.log(result);
     if (!result.destination) return;
     try {
       setLoading(true);

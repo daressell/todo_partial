@@ -7,7 +7,7 @@ import i18n from "i18next";
 import { useTranslation } from "react-i18next";
 import "moment/locale/ru.js";
 
-const hostName = "https://postgres-heroku-application.herokuapp.com";
+const hostName = process.env.REACT_APP_LINK;
 
 const links = {
   getTodos: `${hostName}/todos`,
