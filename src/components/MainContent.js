@@ -130,14 +130,18 @@ export const MainContent = ({ t, links, handleError, handleChangeLanguage, alert
     if (!result.destination) return;
     try {
       setLoading(true);
+      const sourceIndex = result.source.index;
+      const destinationIndex = result.destination.index;
       const updateItems = [...itemsOnPage];
-      const dragTodo = updateItems.splice(result.source.index, 1)[0];
-      updateItems.splice(result.destination.index, 0, dragTodo);
-      const arrIndex = itemsOnPage.map((item) => item.index);
-      const arrOfTodos = updateItems.map((todo, i) => {
-        return { uuid: todo.uuid, index: arrIndex[i] };
+      const dragTodo = updateItems.splice(sourceIndex, 1)[0];
+      const from = Math.min(sourceIndex, destinationIndex);
+      const to = Math.max(sourceIndex, destinationIndex);
+      updateItems.splice(destinationIndex, 0, dragTodo);
+      const arrIndex = itemsOnPage.slice(from, to + 1).map((item) => item.index);
+      const arrOfTodos = updateItems.slice(from, to + 1).map((todo, i) => {
+        return { uuid: todo.uuid, index: arrIndex[i], name: todo.name };
       });
-      updateItems.forEach((item, i) => {
+      updateItems.slice(from, to + 1).forEach((item, i) => {
         item.index = arrOfTodos[i].index;
         return item;
       });
