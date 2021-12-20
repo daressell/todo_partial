@@ -129,26 +129,49 @@ export const MainContent = ({ t, links, handleError, handleChangeLanguage, alert
   const handleOnDragEnd = async (result) => {
     if (!result.destination) return;
     try {
+      console.log(result);
       setLoading(true);
+      const updateItems = [...itemsOnPage];
       const sourceIndex = result.source.index;
       const destinationIndex = result.destination.index;
-      const updateItems = [...itemsOnPage];
+      console.log(updateItems);
+
+      const newDestinationIndex =
+        (updateItems[result.destination.index + 1].index +
+          updateItems[result.destination.index - 1].index) /
+        2;
+
+      console.log(updateItems[result.source.index].uuid);
+
+      //const id =
+      const todos = { todo: updateItems[sourceIndex] };
+      const updateTodo = { uuid: todos.todo.uuid, index: todos.todo.index };
+      if (sourceIndex === destinationIndex) {
+        setLoading(false);
+        return void 0;
+      }
+      if (sourceIndex > destinationIndex) {
+        todos.prevTodoIndex = updateItems[destinationIndex - 1]?.index;
+        todos.nextTodoIndex = updateItems[destinationIndex]?.index;
+      } else {
+        todos.prevTodoIndex = updateItems[destinationIndex]?.index;
+        todos.nextTodoIndex = updateItems[destinationIndex + 1]?.index;
+      }
+      if (!todos.prevTodoIndex) {
+        todos.prevTodoIndex = defineTodo(todos.nextTodoIndex);
+      }
+      if (!todos.nextTodoIndex) {
+        todos.nextTodoIndex = defineTodo(todos.prevTodoIndex);
+      }
+      updateTodo.index = (todos.nextTodoIndex + todos.prevTodoIndex) / 2;
+      todos.todo.index = updateTodo.index;
+      updateItems[sourceIndex].index = updateTodo.index;
       const dragTodo = updateItems.splice(sourceIndex, 1)[0];
-      const from = Math.min(sourceIndex, destinationIndex);
-      const to = Math.max(sourceIndex, destinationIndex);
       updateItems.splice(destinationIndex, 0, dragTodo);
-      const arrIndex = itemsOnPage.slice(from, to + 1).map((item) => item.index);
-      const arrOfTodos = updateItems.slice(from, to + 1).map((todo, i) => {
-        return { uuid: todo.uuid, index: arrIndex[i], name: todo.name };
-      });
-      updateItems.slice(from, to + 1).forEach((item, i) => {
-        item.index = arrOfTodos[i].index;
-        return item;
-      });
       setItemsOnPage(updateItems);
       await axios.patch(
-        links.todosMoved,
-        { todos: arrOfTodos },
+        links.todoMoved,
+        { todo: updateTodo },
         {
           headers: {
             Authorization: localStorage.getItem("accessToken"),
@@ -161,6 +184,22 @@ export const MainContent = ({ t, links, handleError, handleChangeLanguage, alert
     } catch (err) {
       handleError(err);
       setLoading(false);
+    }
+  };
+
+  const defineTodo = (existTodo = 1000) => {
+    if (sort === "asc") {
+      if (existTodo % 1000) {
+        return existTodo - (existTodo % 1000);
+      } else {
+        return existTodo - 500;
+      }
+    } else {
+      if (existTodo % 1000) {
+        return existTodo + (existTodo % 1000);
+      } else {
+        return existTodo + 500;
+      }
     }
   };
 
