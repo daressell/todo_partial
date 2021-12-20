@@ -18,6 +18,8 @@ export const MainContent = ({ t, links, handleError, handleChangeLanguage, alert
   const [countOfItems, setCountOfItems] = useState(0);
   const [pageSize, setPageSize] = useState(5);
   const [loading, setLoading] = useState(false);
+  const [allTodos, setAllTodos] = useState([]);
+  const [prevTodoIndex, setPrevTodoIndex] = useState();
 
   const getItems = async () => {
     try {
@@ -29,9 +31,10 @@ export const MainContent = ({ t, links, handleError, handleChangeLanguage, alert
           "Content-Type": "application/json",
         },
       });
-
+      setAllTodos(res.data.items);
       const showItems = res.data.items;
-      setItemsOnPage(showItems);
+      setItemsOnPage(showItems.slice(1, pageSize + 1));
+      setPrevTodoIndex(res.data.prevTodoIndex || 0);
       if (res.data.countOfTodos !== 0) {
         setCountOfItems(res.data.countOfTodos);
       } else {
@@ -129,27 +132,14 @@ export const MainContent = ({ t, links, handleError, handleChangeLanguage, alert
   const handleOnDragEnd = async (result) => {
     if (!result.destination) return;
     try {
-      console.log(result);
-      setLoading(true);
-      const updateItems = [...itemsOnPage];
       const sourceIndex = result.source.index;
       const destinationIndex = result.destination.index;
-      console.log(updateItems);
-
-      const newDestinationIndex =
-        (updateItems[result.destination.index + 1].index +
-          updateItems[result.destination.index - 1].index) /
-        2;
-
-      console.log(updateItems[result.source.index].uuid);
-
-      //const id =
-      const todos = { todo: updateItems[sourceIndex] };
-      const updateTodo = { uuid: todos.todo.uuid, index: todos.todo.index };
       if (sourceIndex === destinationIndex) {
         setLoading(false);
         return void 0;
       }
+      const updateItems = [...itemsOnPage];
+      const todos = {};
       if (sourceIndex > destinationIndex) {
         todos.prevTodoIndex = updateItems[destinationIndex - 1]?.index;
         todos.nextTodoIndex = updateItems[destinationIndex]?.index;
@@ -158,13 +148,10 @@ export const MainContent = ({ t, links, handleError, handleChangeLanguage, alert
         todos.nextTodoIndex = updateItems[destinationIndex + 1]?.index;
       }
       if (!todos.prevTodoIndex) {
-        todos.prevTodoIndex = defineTodo(todos.nextTodoIndex);
+        todos.prevTodoIndex = allTodos[0].index;
       }
-      if (!todos.nextTodoIndex) {
-        todos.nextTodoIndex = defineTodo(todos.prevTodoIndex);
-      }
+      const updateTodo = { uuid: updateItems[sourceIndex].uuid };
       updateTodo.index = (todos.nextTodoIndex + todos.prevTodoIndex) / 2;
-      todos.todo.index = updateTodo.index;
       updateItems[sourceIndex].index = updateTodo.index;
       const dragTodo = updateItems.splice(sourceIndex, 1)[0];
       updateItems.splice(destinationIndex, 0, dragTodo);
@@ -184,22 +171,6 @@ export const MainContent = ({ t, links, handleError, handleChangeLanguage, alert
     } catch (err) {
       handleError(err);
       setLoading(false);
-    }
-  };
-
-  const defineTodo = (existTodo = 1000) => {
-    if (sort === "asc") {
-      if (existTodo % 1000) {
-        return existTodo - (existTodo % 1000);
-      } else {
-        return existTodo - 500;
-      }
-    } else {
-      if (existTodo % 1000) {
-        return existTodo + (existTodo % 1000);
-      } else {
-        return existTodo + 500;
-      }
     }
   };
 
