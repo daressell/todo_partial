@@ -19,7 +19,6 @@ export const MainContent = ({ t, links, handleError, handleChangeLanguage, alert
   const [pageSize, setPageSize] = useState(5);
   const [loading, setLoading] = useState(false);
   const [allTodos, setAllTodos] = useState([]);
-  const [prevTodoIndex, setPrevTodoIndex] = useState();
 
   const getItems = async () => {
     try {
@@ -33,8 +32,8 @@ export const MainContent = ({ t, links, handleError, handleChangeLanguage, alert
       });
       setAllTodos(res.data.items);
       const showItems = res.data.items;
+      setAllTodos(showItems);
       setItemsOnPage(showItems.slice(1, pageSize + 1));
-      setPrevTodoIndex(res.data.prevTodoIndex || 0);
       if (res.data.countOfTodos !== 0) {
         setCountOfItems(res.data.countOfTodos);
       } else {
@@ -141,16 +140,23 @@ export const MainContent = ({ t, links, handleError, handleChangeLanguage, alert
       const updateItems = [...itemsOnPage];
       const todos = {};
       if (sourceIndex > destinationIndex) {
-        todos.prevTodoIndex = updateItems[destinationIndex - 1]?.index;
+        todos.prevTodoIndex = allTodos[destinationIndex]?.index;
         todos.nextTodoIndex = updateItems[destinationIndex]?.index;
       } else {
         todos.prevTodoIndex = updateItems[destinationIndex]?.index;
-        todos.nextTodoIndex = updateItems[destinationIndex + 1]?.index;
+        todos.nextTodoIndex = allTodos[destinationIndex + 2]?.index;
       }
       if (!todos.prevTodoIndex) {
         todos.prevTodoIndex = allTodos[0].index;
       }
-      const updateTodo = { uuid: updateItems[sourceIndex].uuid };
+      if (!todos.nextTodoIndex) {
+        sort === "desc" ? (todos.extraPart = -1000) : (todos.extraPart = 1000);
+        todos.nextTodoIndex = allTodos[allTodos.length - 1].index + todos.extraPart;
+      }
+      const updateTodo = {
+        uuid: updateItems[sourceIndex].uuid,
+        name: updateItems[sourceIndex].name,
+      };
       updateTodo.index = (todos.nextTodoIndex + todos.prevTodoIndex) / 2;
       updateItems[sourceIndex].index = updateTodo.index;
       const dragTodo = updateItems.splice(sourceIndex, 1)[0];
