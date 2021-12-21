@@ -11,6 +11,7 @@ export const Registration = ({ t, links, handleError, handleChangeLanguage, aler
 
   useEffect(() => {
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("role");
   }, []);
 
   const onFinish = async (values) => {
