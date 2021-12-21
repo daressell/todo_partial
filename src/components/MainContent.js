@@ -1,16 +1,13 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { AddItem } from "./AddItem";
 import { List } from "./List";
 import { SortFilterPanel } from "./SortFilterPanel";
-import { Col, Pagination, Row, Spin, Menu, Select } from "antd";
+import { Col, Pagination, Row, Spin } from "antd";
 import axios from "axios";
-import i18n from "i18next";
 import "../translation/index.js";
+import { MenuPanel } from "./MenuPanel";
 
 export const MainContent = ({ t, links, handleError, handleChangeLanguage, alertMessage }) => {
-  const { Option } = Select;
-  const navigate = useNavigate();
   const [filter, setFilter] = useState("all");
   const [sort, setSort] = useState("desc");
   const [activePage, setActivePage] = useState(1);
@@ -121,13 +118,6 @@ export const MainContent = ({ t, links, handleError, handleChangeLanguage, alert
     setPageSize(pagesize);
   };
 
-  const handleClickMenu = ({ key }) => {
-    if (key === "logout") {
-      localStorage.removeItem("accessToken");
-      navigate("/login");
-    }
-  };
-
   const handleOnDragEnd = async (result) => {
     if (!result.destination) return;
     try {
@@ -184,23 +174,7 @@ export const MainContent = ({ t, links, handleError, handleChangeLanguage, alert
     <>
       {localStorage.getItem("accessToken") && (
         <>
-          <Menu
-            onClick={handleClickMenu}
-            selectedKeys={[]}
-            mode="horizontal"
-            theme="dark"
-            style={{ display: "flex", justifyContent: "end" }}
-          >
-            <Menu.Item key="languages">
-              <Select defaultValue={i18n.language} onChange={handleChangeLanguage}>
-                <Option value="ru">{t("ru")}</Option>
-                <Option value="en">{t("en")}</Option>
-              </Select>
-            </Menu.Item>
-            <Menu.Item key="logout" danger={true}>
-              {t("quit")}
-            </Menu.Item>
-          </Menu>
+          <MenuPanel t={t} handleChangeLanguage={handleChangeLanguage} />
           <Row type="flex" justify="center" align="middle" style={{ minHeight: "80vh" }}>
             <Col xxl={12} xl={13} lg={16} md={20} sm={22} xs={23}>
               <Row justify="center">

@@ -28,5 +28,7 @@ export default {
   errItemName: "Need more, than 1 symbol and less, than 100",
   errMeaninglessContent: "meaningless content",
   itemsEmpty: "list is empty",
-  errBadName: "Invalid name"
+  errBadName: "Invalid name",
+  myTodos: "My todos",
+  listUsers: "List of users",
 };

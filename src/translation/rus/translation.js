@@ -29,4 +29,6 @@ export default {
   errMeaninglessContent: "бессмысленный контент",
   itemsEmpty: "список пуст",
   errBadName: "Некорректное имя",
+  myTodos: "Мой список дел",
+  listUsers: "Список пользователей",
 };

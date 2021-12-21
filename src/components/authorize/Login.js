@@ -10,6 +10,7 @@ export const Login = ({ t, links, handleError, handleChangeLanguage }) => {
   const { Option } = Select;
   useEffect(() => {
     localStorage.removeItem("accessToken");
+    localStorage.removeItem("role");
   }, []);
 
   const onFinish = async (values) => {
@@ -17,6 +18,7 @@ export const Login = ({ t, links, handleError, handleChangeLanguage }) => {
       const user = values;
       const result = await axios.post(links.login, user);
       localStorage.setItem("accessToken", result.data.token);
+      localStorage.setItem("role", result.data.role);
       navigate("/todos");
     } catch (err) {
       handleError(err);
