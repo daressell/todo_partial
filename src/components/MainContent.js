@@ -27,15 +27,17 @@ export const MainContent = ({ t, links, handleError, handleChangeLanguage, alert
           "Content-Type": "application/json",
         },
       });
-      setAllTodos(res.data.items);
-      const showItems = res.data.items;
-      setAllTodos(showItems);
-      setItemsOnPage(showItems.slice(1, pageSize + 1));
-      if (res.data.countOfTodos !== 0) {
-        setCountOfItems(res.data.countOfTodos);
-      } else {
+      const data = res.data.result;
+      setItemsOnPage(data.rows);
+
+      const allTodos = [...data.rows];
+      allTodos.push(data.nextTodo);
+      allTodos.unshift(data.prevTodo);
+      setAllTodos(allTodos);
+      setCountOfItems(data.count);
+
+      if (data.count === 0) {
         alertMessage(t("itemsEmpty"), "info");
-        setCountOfItems(0);
       }
     } catch (err) {
       handleError(err);
@@ -121,37 +123,43 @@ export const MainContent = ({ t, links, handleError, handleChangeLanguage, alert
   const handleOnDragEnd = async (result) => {
     if (!result.destination) return;
     try {
-      const sourceIndex = result.source.index;
-      const destinationIndex = result.destination.index;
+      //index of todo, which dragged
+      const sourceIndex = result.source.index + 1;
+
+      //index of todo, which on dropped
+      const destinationIndex = result.destination.index + 1;
+
       if (sourceIndex === destinationIndex) {
         setLoading(false);
         return void 0;
       }
-      const updateItems = [...itemsOnPage];
+      const updateItems = [...allTodos];
       const todos = {};
+
+      //check from where dragged, from top to bottom or else
       if (sourceIndex > destinationIndex) {
-        todos.prevTodoIndex = allTodos[destinationIndex]?.index;
+        todos.prevTodoIndex = updateItems[destinationIndex - 1]?.index;
         todos.nextTodoIndex = updateItems[destinationIndex]?.index;
       } else {
         todos.prevTodoIndex = updateItems[destinationIndex]?.index;
-        todos.nextTodoIndex = allTodos[destinationIndex + 2]?.index;
+        todos.nextTodoIndex = updateItems[destinationIndex + 1]?.index;
       }
-      if (!todos.prevTodoIndex) {
-        todos.prevTodoIndex = allTodos[0].index;
-      }
-      if (!todos.nextTodoIndex) {
-        sort === "desc" ? (todos.extraPart = -1000) : (todos.extraPart = 1000);
-        todos.nextTodoIndex = allTodos[allTodos.length - 1].index + todos.extraPart;
-      }
+      //---end check
+
       const updateTodo = {
         uuid: updateItems[sourceIndex].uuid,
         name: updateItems[sourceIndex].name,
       };
       updateTodo.index = (todos.nextTodoIndex + todos.prevTodoIndex) / 2;
-      updateItems[sourceIndex].index = updateTodo.index;
+      updateItems[sourceIndex].index = parseInt(updateTodo.index);
+
+      // swap position on front end(so that not to use get request)
       const dragTodo = updateItems.splice(sourceIndex, 1)[0];
       updateItems.splice(destinationIndex, 0, dragTodo);
-      setItemsOnPage(updateItems);
+      setAllTodos(updateItems);
+      setItemsOnPage(updateItems.slice(1, itemsOnPage.length + 1).filter((item) => item.uuid));
+      //---end swap
+
       await axios.patch(
         links.todoMoved,
         { todo: updateTodo },

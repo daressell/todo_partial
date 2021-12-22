@@ -27,7 +27,7 @@ function App() {
   const [role, setRole] = useState();
 
   const handleError = (err) => {
-    if (err.response.data === "not admin") {
+    if (err.response?.data === "not admin") {
       navigate("/todos");
       localStorage.setItem("role", "user");
     }
