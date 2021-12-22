@@ -1,16 +1,18 @@
 import { Button, Form, Input, Row, Col, Space, Typography, Select } from "antd";
 import axios from "axios";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../../translation/index.js";
 import i18n from "i18next";
+import { RoleContext } from "../context/RoleContext.js";
 
 export const Login = ({ t, links, handleError, handleChangeLanguage }) => {
   const navigate = useNavigate();
+  const [, setRole] = useContext(RoleContext);
   const { Option } = Select;
   useEffect(() => {
     localStorage.removeItem("accessToken");
-    localStorage.removeItem("role");
+    setRole("");
   }, []);
 
   const onFinish = async (values) => {
@@ -18,7 +20,7 @@ export const Login = ({ t, links, handleError, handleChangeLanguage }) => {
       const user = values;
       const result = await axios.post(links.login, user);
       localStorage.setItem("accessToken", result.data.token);
-      localStorage.setItem("role", result.data.role);
+      setRole(result.data.role);
       navigate("/todos");
     } catch (err) {
       handleError(err);

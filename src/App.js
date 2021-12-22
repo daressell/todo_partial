@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { MainContent } from "./components/MainContent";
 import { notification } from "antd";
@@ -7,7 +8,7 @@ import { AdminPanel } from "./components/admin/AdminPanel";
 import i18n from "i18next";
 import { useTranslation } from "react-i18next";
 import "moment/locale/ru.js";
-import { useState } from "react";
+import { RoleContext } from "./components/context/RoleContext.js";
 
 const hostName = process.env.REACT_APP_LINK;
 
@@ -22,9 +23,9 @@ const links = {
 };
 
 function App() {
+  const [role, setRole] = useState("user");
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [role, setRole] = useState();
 
   const handleError = (err) => {
     if (err.response?.data === "not admin") {
@@ -51,60 +52,59 @@ function App() {
 
   return (
     <>
-      <Routes>
-        <Route
-          path="/login"
-          element={
-            <Login
-              t={t}
-              setRole={setRole}
-              links={links}
-              handleError={handleError}
-              handleChangeLanguage={handleChangeLanguage}
-            />
-          }
-        />
-        <Route
-          path="/registration"
-          element={
-            <Registration
-              t={t}
-              setRole={setRole}
-              links={links}
-              handleError={handleError}
-              handleChangeLanguage={handleChangeLanguage}
-              alertMessage={alertMessage}
-            />
-          }
-        />
-        <Route
-          path="/users"
-          element={
-            <AdminPanel
-              t={t}
-              role={role}
-              links={links}
-              handleError={handleError}
-              handleChangeLanguage={handleChangeLanguage}
-              alertMessage={alertMessage}
-            />
-          }
-        />
-        <Route
-          path="/todos"
-          element={
-            <MainContent
-              t={t}
-              role={role}
-              links={links}
-              handleError={handleError}
-              handleChangeLanguage={handleChangeLanguage}
-              alertMessage={alertMessage}
-            />
-          }
-        />
-        <Route path="*" element={<Navigate replace to="/todos" />} />
-      </Routes>
+      <RoleContext.Provider value={[role, setRole]}>
+        <Routes>
+          <Route
+            path="/login"
+            element={
+              <Login
+                t={t}
+                links={links}
+                handleError={handleError}
+                handleChangeLanguage={handleChangeLanguage}
+              />
+            }
+          />
+          <Route
+            path="/registration"
+            element={
+              <Registration
+                t={t}
+                links={links}
+                handleError={handleError}
+                handleChangeLanguage={handleChangeLanguage}
+                alertMessage={alertMessage}
+              />
+            }
+          />
+          <Route
+            path="/users"
+            element={
+              <AdminPanel
+                t={t}
+                links={links}
+                handleError={handleError}
+                handleChangeLanguage={handleChangeLanguage}
+                alertMessage={alertMessage}
+              />
+            }
+          />
+          <Route
+            path="/todos"
+            element={
+              <MainContent
+                t={t}
+                role={role}
+                links={links}
+                handleError={handleError}
+                handleChangeLanguage={handleChangeLanguage}
+                alertMessage={alertMessage}
+              />
+            }
+          />
+          <Route path="*" element={<Navigate replace to="/todos" />} />
+        </Routes>
+      </RoleContext.Provider>
     </>
   );
 }

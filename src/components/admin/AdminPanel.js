@@ -1,13 +1,15 @@
+import { useEffect, useState, useContext } from "react";
 import { Layout, Breadcrumb, Spin } from "antd";
 import axios from "axios";
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { MenuPanel } from "../MenuPanel";
 import { ListOfUsers } from "./ListOfUsers";
 import { ListOfTodos } from "./ListOfTodos";
 import moment from "moment";
+import { RoleContext } from "../context/RoleContext.js";
 
 export const AdminPanel = ({ t, links, handleError, handleChangeLanguage }) => {
+  const [role, setRole] = useContext(RoleContext);
   const { Header, Sider, Content } = Layout;
   const [usersOnPage, setUsersOnPage] = useState([]);
   const [todosOfUser, setTodosOfUser] = useState([]);
@@ -54,7 +56,7 @@ export const AdminPanel = ({ t, links, handleError, handleChangeLanguage }) => {
   };
 
   useEffect(() => {
-    if (localStorage.getItem("role") !== "admin") return navigate("/todos");
+    if (role !== "admin") return navigate("/todos");
     getUsers();
   }, []);
 

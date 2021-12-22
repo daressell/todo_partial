@@ -1,17 +1,19 @@
 import { Button, Form, Input, Row, Col, Space, Typography, Select } from "antd";
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import axios from "axios";
 import "../../translation/index.js";
 import i18n from "i18next";
+import { RoleContext } from "../context/RoleContext.js";
 
 export const Registration = ({ t, links, handleError, handleChangeLanguage, alertMessage }) => {
   const navigate = useNavigate();
+  const [, setRole] = useContext(RoleContext);
   const { Option } = Select;
 
   useEffect(() => {
     localStorage.removeItem("accessToken");
-    localStorage.removeItem("role");
+    setRole("");
   }, []);
 
   const onFinish = async (values) => {
