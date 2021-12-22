@@ -31,4 +31,11 @@ export default {
   errBadName: "Invalid name",
   myTodos: "My todos",
   listUsers: "List of users",
+  name: "Name",
+  status: "Status",
+  createdAt: "Created at",
+  index: "Index",
+  userId: "User ID",
+  doneTodo: "Done",
+  undoneTodo: "Undone",
 };

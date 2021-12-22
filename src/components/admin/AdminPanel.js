@@ -5,6 +5,7 @@ import { useNavigate } from "react-router";
 import { MenuPanel } from "../MenuPanel";
 import { ListOfUsers } from "./ListOfUsers";
 import { ListOfTodos } from "./ListOfTodos";
+import moment from "moment";
 
 export const AdminPanel = ({ t, links, handleError, handleChangeLanguage }) => {
   const { Header, Sider, Content } = Layout;
@@ -42,7 +43,8 @@ export const AdminPanel = ({ t, links, handleError, handleChangeLanguage }) => {
         },
       });
       const todos = result.data.todos.map((todo) => {
-        todo.status = todo.status.toString();
+        todo.status = todo.status ? t("doneTodo") : t("undoneTodo");
+        todo.createdAt = moment(todo.createdAt).format("lll");
         return todo;
       });
       setTodosOfUser(todos);
@@ -66,18 +68,18 @@ export const AdminPanel = ({ t, links, handleError, handleChangeLanguage }) => {
       <MenuPanel t={t} handleChangeLanguage={handleChangeLanguage} />
       <Layout>
         <Sider style={{ height: "95%", width: "200px", position: "fixed", overflow: "auto" }}>
-          <ListOfUsers users={usersOnPage} handleSetUser={handleSetUser} />
+          <ListOfUsers t={t} users={usersOnPage} handleSetUser={handleSetUser} />
         </Sider>
       </Layout>
       <Layout style={{ marginLeft: "200px" }}>
         <Header style={{ backgroundColor: "#e6f7ff" }}>
           <Breadcrumb style={{ margin: "16px 0" }}>
-            <Breadcrumb.Item>User.uuid</Breadcrumb.Item>
+            <Breadcrumb.Item>{t("userId")}</Breadcrumb.Item>
             <Breadcrumb.Item>{userUuid}</Breadcrumb.Item>
           </Breadcrumb>
         </Header>
         <Content>
-          <ListOfTodos todos={todosOfUser} />
+          <ListOfTodos t={t} todos={todosOfUser} />
         </Content>
       </Layout>
     </Spin>

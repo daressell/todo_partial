@@ -31,4 +31,11 @@ export default {
   errBadName: "Некорректное имя",
   myTodos: "Мой список дел",
   listUsers: "Список пользователей",
+  name: "Название",
+  status: "Статус",
+  createdAt: "Создан",
+  index: "Индекс",
+  userId: "ID пользователя",
+  doneTodo: "Сделана",
+  undoneTodo: "Не сделана",
 };
